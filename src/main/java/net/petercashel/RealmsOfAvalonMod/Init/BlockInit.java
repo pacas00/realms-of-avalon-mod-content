@@ -1,8 +1,9 @@
-package net.petercashel.PlumYetiEL2021Mod.Init;
+package net.petercashel.RealmsOfAvalonMod.Init;
 
 import net.minecraftforge.common.MinecraftForge;
-import net.petercashel.PlumYetiEL2021Mod.Blocks.BlockCartDetector;
-import net.petercashel.PlumYetiEL2021Mod.Interfaces.IInitEvents;
+import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartDetector;
+import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartEnergyLoader;
+import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
 
 import java.util.ArrayList;
 
@@ -13,9 +14,10 @@ public class BlockInit {
     public static void PreInit() {
 
         blockCartDetector = new BlockCartDetector();
-
+        blockCartEnergyLoader = new BlockCartEnergyLoader();
 
         initList.add(blockCartDetector);
+        initList.add(blockCartEnergyLoader);
 
 
         for (IInitEvents init : initList) {
@@ -35,4 +37,5 @@ public class BlockInit {
 
     /* REFERENCES */
     public static BlockCartDetector blockCartDetector;
+    public static BlockCartEnergyLoader blockCartEnergyLoader;
 }

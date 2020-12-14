@@ -1,4 +1,4 @@
-package net.petercashel.PlumYetiEL2021Mod;
+package net.petercashel.RealmsOfAvalonMod;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -15,19 +15,19 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.petercashel.PlumYetiEL2021Mod.Blocks.BlockCartDetector;
-import net.petercashel.PlumYetiEL2021Mod.Init.BlockInit;
-import net.petercashel.PlumYetiEL2021Mod.Init.ItemInit;
+import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartDetector;
+import net.petercashel.RealmsOfAvalonMod.Init.BlockInit;
+import net.petercashel.RealmsOfAvalonMod.Init.ItemInit;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
 
-@Mod(modid = PlumYetiEL2021Mod.MODID, name = PlumYetiEL2021Mod.NAME, version = PlumYetiEL2021Mod.VERSION)
-public class PlumYetiEL2021Mod
+@Mod(modid = RealmsOfAvalonMod.MODID, name = RealmsOfAvalonMod.NAME, version = RealmsOfAvalonMod.VERSION)
+public class RealmsOfAvalonMod
 {
-    public static final String MODID = "plumyetiel2021mod";
-    public static final String NAME = "PlumYeti ExtraLife 2021 Mod";
+    public static final String MODID = "realmsofavalonmod";
+    public static final String NAME = "Realms of Avalon Server Content Mod";
     public static final String VERSION = "1.0";
 
     private static Logger logger;
@@ -37,13 +37,6 @@ public class PlumYetiEL2021Mod
     {
         logger = event.getModLog();
         MinecraftForge.EVENT_BUS.register(this);
-
-        ResourceLocation testLoc = new ResourceLocation(MODID, "");
-        try {
-            List<IResource> Resources = Minecraft.getMinecraft().getResourceManager().getAllResources(testLoc);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         BlockInit.PreInit();
         ItemInit.PreInit();

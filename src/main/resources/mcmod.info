@@ -1,7 +1,7 @@
 [
 {
-  "modid": "plumyetiel2021mod",
-  "name": "PlumYeti ExtraLife 2021 Mod",
+  "modid": "realmsofavalonmod",
+  "name": "Realms of Avalon Mod",
   "description": "Example placeholder mod.",
   "version": "${version}",
   "mcversion": "${mcversion}",

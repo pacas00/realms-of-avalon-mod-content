@@ -1,0 +1,9 @@
+{
+  "parent": "block/orientable",
+  "textures": {
+    "top": "realmsofavalonmod:blocks/furnace_top",
+    "front": "realmsofavalonmod:blocks/cartenergyloader_front_horizontal",
+    "south": "realmsofavalonmod:blocks/furnace_port_in",
+    "side": "realmsofavalonmod:blocks/furnace_side"
+  }
+}

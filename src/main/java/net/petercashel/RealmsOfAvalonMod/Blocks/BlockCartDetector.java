@@ -1,7 +1,9 @@
-package net.petercashel.PlumYetiEL2021Mod.Blocks;
+package net.petercashel.RealmsOfAvalonMod.Blocks;
 
-import net.minecraft.block.Block;
+import com.google.common.base.Predicate;
+import net.minecraft.block.BlockContainer;
 import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -10,45 +12,38 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.dispenser.*;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityDispenser;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.*;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryDefaulted;
+import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.petercashel.PlumYetiEL2021Mod.Interfaces.IInitEvents;
+import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.TileEntityCartDetector;
 
+import java.util.List;
 import java.util.Random;
 
-public class BlockCartDetector extends Block implements IInitEvents {
+public class BlockCartDetector extends BlockContainer implements IInitEvents, ITileEntityProvider {
 
     public static final PropertyDirection FACING = BlockDirectional.FACING;
-    /** Registry for all dispense behaviors. */
-    public static final RegistryDefaulted<Item, IBehaviorDispenseItem> DISPENSE_BEHAVIOR_REGISTRY = new RegistryDefaulted<Item, IBehaviorDispenseItem>(new BehaviorDefaultDispenseItem());
-    protected Random rand = new Random();
+    public static final PropertyBool POWERED = PropertyBool.create("powered");
+    public Random rand = new Random();
 
     public BlockCartDetector() {
         super(Material.ROCK);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
         this.setCreativeTab(CreativeTabs.REDSTONE);
-    }
-
-    /**
-     * How many world ticks before ticking
-     */
-    public int tickRate(World worldIn)
-    {
-        return 4;
+        this.requiresUpdates();
+        this.needsRandomTick = true;
     }
 
     /**
@@ -90,25 +85,16 @@ public class BlockCartDetector extends Block implements IInitEvents {
                     enumfacing = EnumFacing.WEST;
                 }
             }
-
-        }
-    }
-
-    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
-    {
-        if (!worldIn.isRemote)
-        {
-            //this.dispense(worldIn, pos);
         }
     }
 
     /**
      * Returns a new instance of a block's tile entity class. Called on placing the block.
      */
-//    public TileEntity createNewTileEntity(World worldIn, int meta)
-//    {
-//        return new TileEntityDispenser();
-//    }
+    public TileEntity createNewTileEntity(World worldIn, int meta)
+    {
+        return new TileEntityCartDetector();
+    }
 
     /**
      * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
@@ -126,15 +112,15 @@ public class BlockCartDetector extends Block implements IInitEvents {
     {
         worldIn.setBlockState(pos, state.withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer)), 2);
 
-//        if (stack.hasDisplayName())
-//        {
-//            TileEntity tileentity = worldIn.getTileEntity(pos);
-//
-//            if (tileentity instanceof TileEntityDispenser)
-//            {
-//                ((TileEntityDispenser)tileentity).setCustomName(stack.getDisplayName());
-//            }
-//        }
+        if (stack.hasDisplayName())
+        {
+            TileEntity tileentity = worldIn.getTileEntity(pos);
+
+            if (tileentity instanceof TileEntityCartDetector)
+            {
+                //((TileEntityCartDetector)tileentity).setCustomName(stack.getDisplayName());
+            }
+        }
     }
 
     /**
@@ -142,13 +128,13 @@ public class BlockCartDetector extends Block implements IInitEvents {
      */
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
-//        TileEntity tileentity = worldIn.getTileEntity(pos);
-//
-//        if (tileentity instanceof TileEntityDispenser)
-//        {
+        TileEntity tileentity = worldIn.getTileEntity(pos);
+
+        if (tileentity instanceof TileEntityCartDetector)
+        {
 //            InventoryHelper.dropInventoryItems(worldIn, pos, (TileEntityDispenser)tileentity);
 //            worldIn.updateComparatorOutputLevel(pos, this);
-//        }
+        }
 
         super.breakBlock(worldIn, pos, state);
     }
@@ -189,7 +175,7 @@ public class BlockCartDetector extends Block implements IInitEvents {
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7));
+        return this.getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7)).withProperty(POWERED, Boolean.valueOf((meta & 8) > 0));
     }
 
     /**
@@ -199,6 +185,11 @@ public class BlockCartDetector extends Block implements IInitEvents {
     {
         int i = 0;
         i = i | ((EnumFacing)state.getValue(FACING)).getIndex();
+
+        if (((Boolean)state.getValue(POWERED)).booleanValue())
+        {
+            i |= 8;
+        }
 
         return i;
     }
@@ -218,14 +209,96 @@ public class BlockCartDetector extends Block implements IInitEvents {
      */
     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
     {
-        return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
+        return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING))).withProperty(POWERED, false);
     }
 
     protected BlockStateContainer createBlockState()
     {
-        return new BlockStateContainer(this, new IProperty[] {FACING});
+        return new BlockStateContainer(this, new IProperty[] {FACING, POWERED});
     }
 
+     /**
+     * Can this block provide power. Only wire currently seems to have this change based on its state.
+     */
+    public boolean canProvidePower(IBlockState state)
+    {
+        return true;
+    }
+
+    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
+    {
+        if (!worldIn.isRemote)
+        {
+            this.updatePoweredState(worldIn, pos, state);
+        }
+    }
+
+    public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
+    {
+        return ((Boolean)blockState.getValue(POWERED)).booleanValue() ? 15 : 0;
+    }
+
+    public int getStrongPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
+    {
+        if (!((Boolean)blockState.getValue(POWERED)).booleanValue())
+        {
+            return 0;
+        }
+        else
+        {
+            return side == EnumFacing.UP ? 15 : 0;
+        }
+    }
+
+    private void updatePoweredState(World worldIn, BlockPos pos, IBlockState state)
+    {
+        boolean flag = ((Boolean)state.getValue(POWERED)).booleanValue();
+        boolean flag1 = false;
+
+        Vec3i facing = ((EnumFacing)state.getValue(FACING)).getDirectionVec();
+
+        List<EntityMinecart> list = this.<EntityMinecart>findMinecarts(worldIn, pos.add(facing), EntityMinecart.class);
+
+        if (!list.isEmpty())
+        {
+            flag1 = true;
+        }
+
+        if (flag1 && !flag)
+        {
+            worldIn.setBlockState(pos, state.withProperty(POWERED, Boolean.valueOf(true)), 3);
+            worldIn.notifyNeighborsOfStateChange(pos, this, false);
+            worldIn.notifyNeighborsOfStateChange(pos.down(), this, false);
+            worldIn.markBlockRangeForRenderUpdate(pos, pos);
+        }
+
+        if (!flag1 && flag)
+        {
+            worldIn.setBlockState(pos, state.withProperty(POWERED, Boolean.valueOf(false)), 3);
+            worldIn.notifyNeighborsOfStateChange(pos, this, false);
+            worldIn.notifyNeighborsOfStateChange(pos.down(), this, false);
+            worldIn.markBlockRangeForRenderUpdate(pos, pos);
+        }
+
+        if (flag1)
+        {
+            worldIn.scheduleUpdate(new BlockPos(pos), this, this.tickRate(worldIn));
+        }
+
+        worldIn.updateComparatorOutputLevel(pos, this);
+    }
+
+    protected <T extends EntityMinecart> List<T> findMinecarts(World worldIn, BlockPos pos, Class<T> clazz, Predicate<Entity>... filter)
+    {
+        AxisAlignedBB axisalignedbb = this.getDectectionBox(pos);
+        return filter.length != 1 ? worldIn.getEntitiesWithinAABB(clazz, axisalignedbb) : worldIn.getEntitiesWithinAABB(clazz, axisalignedbb, filter[0]);
+    }
+
+    private AxisAlignedBB getDectectionBox(BlockPos pos)
+    {
+        float f = 0.2F;
+        return new AxisAlignedBB((double)((float)pos.getX() + 0.2F), (double)pos.getY(), (double)((float)pos.getZ() + 0.2F), (double)((float)(pos.getX() + 1) - 0.2F), (double)((float)(pos.getY() + 1) - 0.2F), (double)((float)(pos.getZ() + 1) - 0.2F));
+    }
 
 
     @Override
@@ -239,6 +312,10 @@ public class BlockCartDetector extends Block implements IInitEvents {
         itemBlock.setRegistryName(this.getRegistryName());
 
         ForgeRegistries.ITEMS.register(itemBlock);
+
+        ResourceLocation loc = ForgeRegistries.BLOCKS.getKey(this);
+        //GameRegistry.registerTileEntity(TileEntityCartDetector.class, loc.toString());
+        TileEntityCartDetector.register(loc.toString(), TileEntityCartDetector.class);
 
         return false;
     }

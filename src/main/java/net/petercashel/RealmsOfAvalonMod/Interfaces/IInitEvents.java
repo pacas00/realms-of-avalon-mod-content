@@ -1,4 +1,4 @@
-package net.petercashel.PlumYetiEL2021Mod.Interfaces;
+package net.petercashel.RealmsOfAvalonMod.Interfaces;
 
 public interface IInitEvents {
     boolean PreInit();

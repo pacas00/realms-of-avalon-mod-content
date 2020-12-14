@@ -1,8 +1,7 @@
-package net.petercashel.PlumYetiEL2021Mod.Init;
+package net.petercashel.RealmsOfAvalonMod.Init;
 
 import net.minecraftforge.common.MinecraftForge;
-import net.petercashel.PlumYetiEL2021Mod.Blocks.BlockCartDetector;
-import net.petercashel.PlumYetiEL2021Mod.Interfaces.IInitEvents;
+import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
 
 import java.util.ArrayList;
 
