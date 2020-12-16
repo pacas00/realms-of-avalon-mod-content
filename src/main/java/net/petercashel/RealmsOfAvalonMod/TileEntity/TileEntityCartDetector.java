@@ -17,7 +17,7 @@ public class TileEntityCartDetector extends TileEntity implements ITickable {
 
 
     public void update() {
-        if (this.world != null && !this.world.isRemote && this.world.getTotalWorldTime() % 20L == 0L)
+        if (this.world != null && !this.world.isRemote && this.world.getTotalWorldTime() % 10L == 0L)
         {
             this.blockType = this.getBlockType();
 
