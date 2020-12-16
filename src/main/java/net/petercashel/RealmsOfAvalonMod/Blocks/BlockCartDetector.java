@@ -10,12 +10,14 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.dispenser.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.inventory.Container;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -25,8 +27,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
+import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonMod;
 import net.petercashel.RealmsOfAvalonMod.TileEntity.TileEntityCartDetector;
 
 import java.util.List;
@@ -302,13 +308,13 @@ public class BlockCartDetector extends BlockContainer implements IInitEvents, IT
 
 
     @Override
-    public boolean PreInit() {
-        this.setUnlocalizedName("cartdetector");
+    public boolean PreInit(FMLPreInitializationEvent event) {
+        this.setUnlocalizedName(event.getModMetadata().modId + "." + "cartdetector");
         this.setRegistryName("cartdetector");
         ForgeRegistries.BLOCKS.register(this);
 
         itemBlock = new ItemBlock(this);
-        itemBlock.setUnlocalizedName("cartdetector");
+        itemBlock.setUnlocalizedName(event.getModMetadata().modId + "." + "cartdetector");
         itemBlock.setRegistryName(this.getRegistryName());
 
         ForgeRegistries.ITEMS.register(itemBlock);
@@ -317,15 +323,23 @@ public class BlockCartDetector extends BlockContainer implements IInitEvents, IT
         //GameRegistry.registerTileEntity(TileEntityCartDetector.class, loc.toString());
         TileEntityCartDetector.register(loc.toString(), TileEntityCartDetector.class);
 
+        this.setCreativeTab(RealmsOfAvalonMod.modTab);
+        itemBlock.setCreativeTab(RealmsOfAvalonMod.modTab);
         return false;
     }
 
     @Override
-    public boolean Initialize() {
+    public boolean Initialize(FMLInitializationEvent event) {
 
         addRecipes();
 
         return false;
+    }
+
+    @Override
+    public void RegisterRendering(FMLPreInitializationEvent event) {
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(this.getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(itemBlock, 0, new ModelResourceLocation(itemBlock.getRegistryName(), "inventory"));
     }
 
     private void addRecipes() {

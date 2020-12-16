@@ -1,7 +1,12 @@
 package net.petercashel.RealmsOfAvalonMod.Interfaces;
 
-public interface IInitEvents {
-    boolean PreInit();
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-    boolean Initialize();
+public interface IInitEvents {
+    boolean PreInit(FMLPreInitializationEvent event);
+
+    boolean Initialize(FMLInitializationEvent event);
+
+    void RegisterRendering(FMLPreInitializationEvent event);
 }

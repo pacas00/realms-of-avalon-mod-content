@@ -40,18 +40,18 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
 import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonMod;
-import net.petercashel.RealmsOfAvalonMod.TileEntity.*;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.TileEntityCartEnergyUnLoader;
 
 import java.util.List;
 import java.util.Random;
 
-public class BlockCartEnergyLoader extends BlockContainer implements IInitEvents, ITileEntityProvider {
+public class BlockCartEnergyUnLoader extends BlockContainer implements IInitEvents, ITileEntityProvider {
 
     public static final PropertyDirection FACING = BlockDirectional.FACING;
     public static final PropertyBool POWERED = PropertyBool.create("powered");
     public Random rand = new Random();
 
-    public BlockCartEnergyLoader() {
+    public BlockCartEnergyUnLoader() {
         super(Material.ROCK);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
         this.setCreativeTab(CreativeTabs.REDSTONE);
@@ -114,9 +114,9 @@ public class BlockCartEnergyLoader extends BlockContainer implements IInitEvents
         {
             TileEntity tileentity = worldIn.getTileEntity(pos);
 
-            if (tileentity instanceof TileEntityCartEnergyLoader)
+            if (tileentity instanceof TileEntityCartEnergyUnLoader)
             {
-                playerIn.sendStatusMessage(new TextComponentString("Stored: " + ((TileEntityCartEnergyLoader)tileentity).getEnergyStored(EnumFacing.SOUTH) + "/" + ((TileEntityCartEnergyLoader)tileentity).getMaxEnergyStored(EnumFacing.SOUTH)), true);
+                playerIn.sendStatusMessage(new TextComponentString("Stored: " + ((TileEntityCartEnergyUnLoader)tileentity).getEnergyStored(EnumFacing.SOUTH) + "/" + ((TileEntityCartEnergyUnLoader)tileentity).getMaxEnergyStored(EnumFacing.SOUTH)), true);
             }
 
             return true;
@@ -128,7 +128,7 @@ public class BlockCartEnergyLoader extends BlockContainer implements IInitEvents
      */
     public TileEntity createNewTileEntity(World worldIn, int meta)
     {
-        return new TileEntityCartEnergyLoader();
+        return new TileEntityCartEnergyUnLoader();
     }
 
     /**
@@ -151,9 +151,9 @@ public class BlockCartEnergyLoader extends BlockContainer implements IInitEvents
         {
             TileEntity tileentity = worldIn.getTileEntity(pos);
 
-            if (tileentity instanceof TileEntityCartEnergyLoader)
+            if (tileentity instanceof TileEntityCartEnergyUnLoader)
             {
-                //((TileEntityCartEnergyLoader)tileentity).setCustomName(stack.getDisplayName());
+                //((TileEntityCartEnergyUnLoader)tileentity).setCustomName(stack.getDisplayName());
             }
         }
     }
@@ -165,7 +165,7 @@ public class BlockCartEnergyLoader extends BlockContainer implements IInitEvents
     {
         TileEntity tileentity = worldIn.getTileEntity(pos);
 
-        if (tileentity instanceof TileEntityCartEnergyLoader)
+        if (tileentity instanceof TileEntityCartEnergyUnLoader)
         {
 //            InventoryHelper.dropInventoryItems(worldIn, pos, (TileEntityDispenser)tileentity);
 //            worldIn.updateComparatorOutputLevel(pos, this);
@@ -306,7 +306,7 @@ public class BlockCartEnergyLoader extends BlockContainer implements IInitEvents
 
         if (!list.isEmpty() && list.get(0) instanceof EntityMinecartChest) {
             EntityMinecartChest chestCart = (EntityMinecartChest) list.get(0);
-            TileEntityCartEnergyLoader tileentity = (TileEntityCartEnergyLoader)worldIn.getTileEntity(pos);
+            TileEntityCartEnergyUnLoader tileentity = (TileEntityCartEnergyUnLoader)worldIn.getTileEntity(pos);
 
             java.util.Set<String> tags = chestCart.getTags();
             if (tags.stream().filter(t -> t.startsWith("Energy")).count() == 0) {
@@ -320,22 +320,21 @@ public class BlockCartEnergyLoader extends BlockContainer implements IInitEvents
             //read
             int currEnergy = 0;
             int maxEnergy = 0;
-            int freeEnergy = 0;
             currEnergy = Integer.parseInt(energyTag.split(":")[1]);
             maxEnergy = Integer.parseInt(maxEnergyTag.split(":")[1]);
-            freeEnergy = maxEnergy - currEnergy;
 
-            if (freeEnergy != 0) {
+            int TransferEnergy = currEnergy;
+
+            if (TransferEnergy != 0) {
                 //WORK
-                if (freeEnergy > 8000) freeEnergy = 8000;
-                int amountToTransfer = tileentity.extractEnergy(GetFacing(state).getOpposite(), freeEnergy, false);
+                if (TransferEnergy > 8000) TransferEnergy = 8000;
+                int amountToTransfered = tileentity.receiveEnergy(GetFacing(state).getOpposite(), TransferEnergy, false);
                 tileentity.markDirty();
-                currEnergy = currEnergy + amountToTransfer;
-                freeEnergy = maxEnergy - currEnergy;
+                currEnergy = currEnergy - amountToTransfered;
                 didWork = true;
 
-                if (amountToTransfer == 0) {
-                    //Empty Buffer
+                if (amountToTransfered == 0) {
+                    //Full Buffer
                     flag1 = true;
                 }
 
@@ -350,11 +349,10 @@ public class BlockCartEnergyLoader extends BlockContainer implements IInitEvents
                 chestCart.setEntityInvulnerable(true);
 
                 NBTTagCompound NBT = chestCart.getEntityData();
-
             }
 
-            if (freeEnergy != 0) {
-                //More space
+            if (currEnergy != 0) {
+                //More energy to transfer
             } else {
                 //Full, Time to go
                 flag1 = true;
@@ -405,19 +403,19 @@ public class BlockCartEnergyLoader extends BlockContainer implements IInitEvents
 
     @Override
     public boolean PreInit(FMLPreInitializationEvent event) {
-        this.setUnlocalizedName(event.getModMetadata().modId + "." + "cartenergyloader");
-        this.setRegistryName("cartenergyloader");
+        this.setUnlocalizedName(event.getModMetadata().modId + "." + "cartenergyunloader");
+        this.setRegistryName("cartenergyunloader");
         ForgeRegistries.BLOCKS.register(this);
 
         itemBlock = new ItemBlock(this);
-        itemBlock.setUnlocalizedName(event.getModMetadata().modId + "." + "cartenergyloader");
+        itemBlock.setUnlocalizedName(event.getModMetadata().modId + "." + "cartenergyunloader");
         itemBlock.setRegistryName(this.getRegistryName());
 
         ForgeRegistries.ITEMS.register(itemBlock);
 
         ResourceLocation loc = ForgeRegistries.BLOCKS.getKey(this);
-        //GameRegistry.registerTileEntity(TileEntityCartEnergyLoader.class, loc.toString());
-        TileEntityCartEnergyLoader.register(loc.toString(), TileEntityCartEnergyLoader.class);
+        //GameRegistry.registerTileEntity(TileEntityCartEnergyUnLoader.class, loc.toString());
+        TileEntityCartEnergyUnLoader.register(loc.toString(), TileEntityCartEnergyUnLoader.class);
 
         this.setCreativeTab(RealmsOfAvalonMod.modTab);
         itemBlock.setCreativeTab(RealmsOfAvalonMod.modTab);
@@ -445,4 +443,6 @@ public class BlockCartEnergyLoader extends BlockContainer implements IInitEvents
 
 
     public static ItemBlock itemBlock;
+
+
 }

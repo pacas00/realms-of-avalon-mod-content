@@ -3,6 +3,8 @@
   "textures": {
     "front": "realmsofavalonmod:blocks/cartenergyloader_front_vertical",
     "down": "realmsofavalonmod:blocks/furnace_port_vert_in",
-    "side": "realmsofavalonmod:blocks/furnace_top"
+    "north": "realmsofavalonmod:blocks/furnace_side_up",
+    "south": "realmsofavalonmod:blocks/furnace_side_up",
+    "side": "realmsofavalonmod:blocks/furnace_side"
   }
 }

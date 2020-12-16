@@ -1,3 +1,8 @@
 {
-    "parent": "realmsofavalonmod:block/cartenergyloader"
+    "defaults": {
+        "model": "realmsofavalonmod:block/cartenergyloader",
+        "__comment": "Get Forge to inject the default rotations and scales for an item in a player's hand, on the ground, etc.",
+        "transform": "forge:default-item"
+    }
 }
+

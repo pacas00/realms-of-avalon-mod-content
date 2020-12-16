@@ -1,0 +1,10 @@
+{
+  "parent": "block/orientable_vertical",
+  "textures": {
+    "front": "realmsofavalonmod:blocks/cartenergyunloader_front_vertical",
+    "down": "realmsofavalonmod:blocks/furnace_port_vert_out",
+    "north": "realmsofavalonmod:blocks/furnace_side_down",
+	"south": "realmsofavalonmod:blocks/furnace_side_down",
+    "side": "realmsofavalonmod:blocks/furnace_side"
+  }
+}
