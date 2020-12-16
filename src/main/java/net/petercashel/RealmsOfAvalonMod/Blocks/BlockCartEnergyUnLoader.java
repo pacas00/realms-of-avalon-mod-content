@@ -327,7 +327,7 @@ public class BlockCartEnergyUnLoader extends BlockContainer implements IInitEven
 
             if (TransferEnergy != 0) {
                 //WORK
-                if (TransferEnergy > 8000) TransferEnergy = 8000;
+                if (TransferEnergy > 25000) TransferEnergy = 25000;
                 int amountToTransfered = tileentity.receiveEnergy(GetFacing(state).getOpposite(), TransferEnergy, false);
                 tileentity.markDirty();
                 currEnergy = currEnergy - amountToTransfered;
@@ -353,6 +353,10 @@ public class BlockCartEnergyUnLoader extends BlockContainer implements IInitEven
 
             if (currEnergy != 0) {
                 //More energy to transfer
+                if (tileentity.getMaxEnergyStored(GetFacing(state).getOpposite()) == tileentity.getEnergyStored(GetFacing(state).getOpposite())) {
+                    //Loader is full
+                    flag1 = true;
+                }
             } else {
                 //Full, Time to go
                 flag1 = true;

@@ -54,7 +54,7 @@ public class TileEntityCartEnergyLoader extends TileEntity implements ITickable,
         return oldState.getBlock() != newSate.getBlock();
     }
 
-    protected EnergyStorage storage = new EnergyStorage(32000);
+    protected EnergyStorage storage = new EnergyStorage(2000000);
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {

@@ -311,7 +311,7 @@ public class BlockCartEnergyLoader extends BlockContainer implements IInitEvents
             java.util.Set<String> tags = chestCart.getTags();
             if (tags.stream().filter(t -> t.startsWith("Energy")).count() == 0) {
                 chestCart.addTag("Energy:0");
-                chestCart.addTag("MaxEnergy:200000");
+                chestCart.addTag("MaxEnergy:2000000");
             }
 
             String energyTag =  tags.stream().filter(t -> t.startsWith("Energy")).findFirst().get();
@@ -327,7 +327,7 @@ public class BlockCartEnergyLoader extends BlockContainer implements IInitEvents
 
             if (freeEnergy != 0) {
                 //WORK
-                if (freeEnergy > 8000) freeEnergy = 8000;
+                if (freeEnergy > 25000) freeEnergy = 25000;
                 int amountToTransfer = tileentity.extractEnergy(GetFacing(state).getOpposite(), freeEnergy, false);
                 tileentity.markDirty();
                 currEnergy = currEnergy + amountToTransfer;
@@ -355,6 +355,10 @@ public class BlockCartEnergyLoader extends BlockContainer implements IInitEvents
 
             if (freeEnergy != 0) {
                 //More space
+                if (tileentity.getEnergyStored(GetFacing(state).getOpposite()) == 0) {
+                    //Loader is empty
+                    flag1 = true;
+                }
             } else {
                 //Full, Time to go
                 flag1 = true;

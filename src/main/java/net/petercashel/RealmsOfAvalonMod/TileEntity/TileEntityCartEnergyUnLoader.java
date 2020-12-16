@@ -72,7 +72,7 @@ public class TileEntityCartEnergyUnLoader extends TileEntity implements ITickabl
     }
 
 
-    protected EnergyStorage storage = new EnergyStorage(32000);
+    protected EnergyStorage storage = new EnergyStorage(2000000);
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
@@ -161,7 +161,7 @@ public class TileEntityCartEnergyUnLoader extends TileEntity implements ITickabl
     * Copied from Thermal Expansion's TileCell
     */
 
-    public static final int CAPACITY_BASE = 32000;
+    public static final int CAPACITY_BASE = 2000000;
     public static final int[] CAPACITY = { 1, 4, 9, 16, 25 };
 
     private int compareTracker;
@@ -169,8 +169,8 @@ public class TileEntityCartEnergyUnLoader extends TileEntity implements ITickabl
     private int outputTracker;
 
     public short enchantHolding;
-    public int amountRecv = 8000;
-    public int amountSend = 8000;
+    public int amountRecv = 25000;
+    public int amountSend = 25000;
 
     public int level = 0;
 
