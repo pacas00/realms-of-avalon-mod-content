@@ -13,8 +13,8 @@ apply plugin: 'maven'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 version = "1.0"
-group = "net.petercashel.PlumYetiEL2021Mod" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "PlumYetiEL2021Mod"
+group = "net.petercashel.realmsofavalonmod" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "realmsofavalonmod"
 
 sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileJava {
@@ -113,4 +113,4 @@ processResources {
     }
 }
 
-sourceSets { main { output.resourcesDir = output.classesDir } }
+sourceSets { main { output.resourcesDir = "$buildDir/generated-resources-dir/" } }

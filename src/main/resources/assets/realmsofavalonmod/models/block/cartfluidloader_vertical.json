@@ -1,0 +1,10 @@
+{
+  "parent": "block/orientable_vertical",
+  "textures": {
+    "front": "realmsofavalonmod:blocks/cartfluidloader_front_vertical",
+    "down": "realmsofavalonmod:blocks/furnace_port_vert_in",
+    "north": "realmsofavalonmod:blocks/furnace_side_up",
+    "south": "realmsofavalonmod:blocks/furnace_side_up",
+    "side": "realmsofavalonmod:blocks/furnace_side"
+  }
+}

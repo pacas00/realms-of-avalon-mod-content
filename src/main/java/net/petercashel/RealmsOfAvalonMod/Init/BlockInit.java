@@ -3,9 +3,7 @@ package net.petercashel.RealmsOfAvalonMod.Init;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartDetector;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartEnergyLoader;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartEnergyUnLoader;
+import net.petercashel.RealmsOfAvalonMod.Blocks.*;
 import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
 
 import java.util.ArrayList;
@@ -20,10 +18,16 @@ public class BlockInit {
         blockCartEnergyLoader = new BlockCartEnergyLoader();
         blockCartEnergyUnLoader = new BlockCartEnergyUnLoader();
 
+
+        blockCartFluidLoader = new BlockCartFluidLoader();
+        blockCartFluidUnLoader = new BlockCartFluidUnLoader();
+
         initList.add(blockCartDetector);
         initList.add(blockCartEnergyLoader);
         initList.add(blockCartEnergyUnLoader);
 
+        initList.add(blockCartFluidLoader);
+        initList.add(blockCartFluidUnLoader);
 
         for (IInitEvents init : initList) {
             init.PreInit(event);
@@ -51,5 +55,7 @@ public class BlockInit {
     public static BlockCartEnergyLoader blockCartEnergyLoader;
     public static BlockCartEnergyUnLoader blockCartEnergyUnLoader;
 
+    public static BlockCartFluidLoader blockCartFluidLoader;
+    public static BlockCartFluidUnLoader blockCartFluidUnLoader;
 
 }

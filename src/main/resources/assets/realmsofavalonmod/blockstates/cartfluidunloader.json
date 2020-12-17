@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "inventory": { "model": "realmsofavalonmod:cartfluidunloader" },
+
+    "facing=down,powered=false":  { "model": "realmsofavalonmod:cartfluidunloader_vertical", "x": 180 },
+    "facing=up,powered=false":    { "model": "realmsofavalonmod:cartfluidunloader_vertical" },
+    "facing=north,powered=false": { "model": "realmsofavalonmod:cartfluidunloader" },
+    "facing=south,powered=false": { "model": "realmsofavalonmod:cartfluidunloader", "y": 180 },
+    "facing=west,powered=false":  { "model": "realmsofavalonmod:cartfluidunloader", "y": 270 },
+    "facing=east,powered=false":  { "model": "realmsofavalonmod:cartfluidunloader", "y": 90 },
+
+    "facing=down,powered=true":  { "model": "realmsofavalonmod:cartfluidunloader_vertical", "x": 180 },
+    "facing=up,powered=true":    { "model": "realmsofavalonmod:cartfluidunloader_vertical" },
+    "facing=north,powered=true": { "model": "realmsofavalonmod:cartfluidunloader" },
+    "facing=south,powered=true": { "model": "realmsofavalonmod:cartfluidunloader", "y": 180 },
+    "facing=west,powered=true":  { "model": "realmsofavalonmod:cartfluidunloader", "y": 270 },
+    "facing=east,powered=true":  { "model": "realmsofavalonmod:cartfluidunloader", "y": 90 }
+  }
+}

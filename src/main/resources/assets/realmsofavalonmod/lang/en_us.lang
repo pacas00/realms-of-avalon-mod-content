@@ -1,5 +1,10 @@
-tile.realmsofavalonmod.cartenergyloader.name=Cart Energy Loader
-tile.realmsofavalonmod.cartenergyunloader.name=Cart Energy Unloader
-tile.realmsofavalonmod.cartdetector.name=Cart Detector
 itemGroup.realmsofavalon.creativetab=Realms Of Avalon
 itemgroup.realmsofavalon.creativetab=Realms Of Avalon
+
+tile.realmsofavalonmod.cartdetector.name=Cart Detector
+
+tile.realmsofavalonmod.cartenergyloader.name=Cart Energy Loader
+tile.realmsofavalonmod.cartenergyunloader.name=Cart Energy Unloader
+
+tile.realmsofavalonmod.cartfluidloader.name=Cart Fluid Loader
+tile.realmsofavalonmod.cartfluidunloader.name=Cart Fluid Unloader
