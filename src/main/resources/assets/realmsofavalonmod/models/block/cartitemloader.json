@@ -1,0 +1,11 @@
+{
+  "parent": "block/orientable",
+  "textures": {
+    "top": "realmsofavalonmod:blocks/furnace_top",
+    "front": "realmsofavalonmod:blocks/cartitemloader_front_horizontal",
+    "south": "realmsofavalonmod:blocks/furnace_port_in",
+    "west": "realmsofavalonmod:blocks/furnace_side_left",
+    "east": "realmsofavalonmod:blocks/furnace_side_right",
+    "side": "realmsofavalonmod:blocks/furnace_side"
+  }
+}

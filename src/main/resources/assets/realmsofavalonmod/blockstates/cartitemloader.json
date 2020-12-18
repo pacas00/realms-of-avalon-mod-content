@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "inventory": { "model": "realmsofavalonmod:cartitemloader" },
+
+    "facing=down,powered=false":  { "model": "realmsofavalonmod:cartitemloader_vertical", "x": 180 },
+    "facing=up,powered=false":    { "model": "realmsofavalonmod:cartitemloader_vertical" },
+    "facing=north,powered=false": { "model": "realmsofavalonmod:cartitemloader" },
+    "facing=south,powered=false": { "model": "realmsofavalonmod:cartitemloader", "y": 180 },
+    "facing=west,powered=false":  { "model": "realmsofavalonmod:cartitemloader", "y": 270 },
+    "facing=east,powered=false":  { "model": "realmsofavalonmod:cartitemloader", "y": 90 },
+
+    "facing=down,powered=true":  { "model": "realmsofavalonmod:cartitemloader_vertical", "x": 180 },
+    "facing=up,powered=true":    { "model": "realmsofavalonmod:cartitemloader_vertical" },
+    "facing=north,powered=true": { "model": "realmsofavalonmod:cartitemloader" },
+    "facing=south,powered=true": { "model": "realmsofavalonmod:cartitemloader", "y": 180 },
+    "facing=west,powered=true":  { "model": "realmsofavalonmod:cartitemloader", "y": 270 },
+    "facing=east,powered=true":  { "model": "realmsofavalonmod:cartitemloader", "y": 90 }
+  }
+}

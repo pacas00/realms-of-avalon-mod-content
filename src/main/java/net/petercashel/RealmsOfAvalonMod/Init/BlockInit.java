@@ -18,9 +18,11 @@ public class BlockInit {
         blockCartEnergyLoader = new BlockCartEnergyLoader();
         blockCartEnergyUnLoader = new BlockCartEnergyUnLoader();
 
-
         blockCartFluidLoader = new BlockCartFluidLoader();
         blockCartFluidUnLoader = new BlockCartFluidUnLoader();
+
+        blockCartItemLoader = new BlockCartItemLoader();
+        blockCartItemUnLoader = new BlockCartItemUnLoader();
 
         initList.add(blockCartDetector);
         initList.add(blockCartEnergyLoader);
@@ -28,6 +30,9 @@ public class BlockInit {
 
         initList.add(blockCartFluidLoader);
         initList.add(blockCartFluidUnLoader);
+
+        initList.add(blockCartItemLoader);
+        initList.add(blockCartItemUnLoader);
 
         for (IInitEvents init : initList) {
             init.PreInit(event);
@@ -57,5 +62,8 @@ public class BlockInit {
 
     public static BlockCartFluidLoader blockCartFluidLoader;
     public static BlockCartFluidUnLoader blockCartFluidUnLoader;
+
+    public static BlockCartItemLoader blockCartItemLoader;
+    public static BlockCartItemUnLoader blockCartItemUnLoader;
 
 }

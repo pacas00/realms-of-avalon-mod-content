@@ -35,7 +35,7 @@ public class TileEntityCartFluidUnLoader extends TileEntityBase_FluidDevice impl
     @Override
     public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing)
     {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+        return super.hasCapability(capability, facing);
     }
 
     @SuppressWarnings("unchecked")

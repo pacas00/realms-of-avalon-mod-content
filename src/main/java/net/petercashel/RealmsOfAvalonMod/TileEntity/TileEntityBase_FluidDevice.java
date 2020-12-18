@@ -108,13 +108,13 @@ public abstract class TileEntityBase_FluidDevice extends TileEntityBase_Directio
     @Override
     public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing)
     {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+        return (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && Facing != null && Facing == facing.getOpposite()) || super.hasCapability(capability, facing);
     }
 
     @Override
     public <T> T getCapability(Capability<T> capability, final EnumFacing from) {
 
-        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && Facing != null && Facing == from.getOpposite()) {
             return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(new IFluidHandler() {
 
                 @Override

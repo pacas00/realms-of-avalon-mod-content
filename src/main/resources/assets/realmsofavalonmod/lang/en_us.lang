@@ -8,3 +8,6 @@ tile.realmsofavalonmod.cartenergyunloader.name=Cart Energy Unloader
 
 tile.realmsofavalonmod.cartfluidloader.name=Cart Fluid Loader
 tile.realmsofavalonmod.cartfluidunloader.name=Cart Fluid Unloader
+
+tile.realmsofavalonmod.cartitemloader.name=Cart Item Loader
+tile.realmsofavalonmod.cartitemunloader.name=Cart Item Unloader

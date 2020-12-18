@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "inventory": { "model": "realmsofavalonmod:cartitemunloader" },
+
+    "facing=down,powered=false":  { "model": "realmsofavalonmod:cartitemunloader_vertical", "x": 180 },
+    "facing=up,powered=false":    { "model": "realmsofavalonmod:cartitemunloader_vertical" },
+    "facing=north,powered=false": { "model": "realmsofavalonmod:cartitemunloader" },
+    "facing=south,powered=false": { "model": "realmsofavalonmod:cartitemunloader", "y": 180 },
+    "facing=west,powered=false":  { "model": "realmsofavalonmod:cartitemunloader", "y": 270 },
+    "facing=east,powered=false":  { "model": "realmsofavalonmod:cartitemunloader", "y": 90 },
+
+    "facing=down,powered=true":  { "model": "realmsofavalonmod:cartitemunloader_vertical", "x": 180 },
+    "facing=up,powered=true":    { "model": "realmsofavalonmod:cartitemunloader_vertical" },
+    "facing=north,powered=true": { "model": "realmsofavalonmod:cartitemunloader" },
+    "facing=south,powered=true": { "model": "realmsofavalonmod:cartitemunloader", "y": 180 },
+    "facing=west,powered=true":  { "model": "realmsofavalonmod:cartitemunloader", "y": 270 },
+    "facing=east,powered=true":  { "model": "realmsofavalonmod:cartitemunloader", "y": 90 }
+  }
+}
