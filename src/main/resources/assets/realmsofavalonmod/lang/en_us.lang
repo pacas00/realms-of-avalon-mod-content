@@ -2,6 +2,9 @@ itemGroup.realmsofavalon.creativetab=Realms Of Avalon
 itemgroup.realmsofavalon.creativetab=Realms Of Avalon
 
 tile.realmsofavalonmod.cartdetector.name=Cart Detector
+tile.realmsofavalonmod.cartdetectoritems.name=Cart Detector Items
+tile.realmsofavalonmod.cartdetectorfluids.name=Cart Detector Fluids
+tile.realmsofavalonmod.cartdetectorenergy.name=Cart Detector Energy
 
 tile.realmsofavalonmod.cartenergyloader.name=Cart Energy Loader
 tile.realmsofavalonmod.cartenergyunloader.name=Cart Energy Unloader
@@ -11,3 +14,11 @@ tile.realmsofavalonmod.cartfluidunloader.name=Cart Fluid Unloader
 
 tile.realmsofavalonmod.cartitemloader.name=Cart Item Loader
 tile.realmsofavalonmod.cartitemunloader.name=Cart Item Unloader
+
+
+
+container.realmsofavalonmod.cartitemloader=Cart Item Loader
+container.realmsofavalonmod.cartitemunloader=Cart Item Unloader
+
+container.realmsofavalonmod.cartdetectoritems=Cart Detector Items
+container.realmsofavalonmod.cartdetectorfluids=Cart Detector Fluids

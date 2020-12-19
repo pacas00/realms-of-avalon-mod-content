@@ -1,19 +1,12 @@
 package net.petercashel.RealmsOfAvalonMod.TileEntity;
 
-import net.minecraft.block.BlockDaylightDetector;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartDetector;
 import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartLoaderBase;
 
-public class TileEntityCartDetector extends TileEntityBase_Directional implements ITickable {
+public class TileEntityCartDetectorItems extends TileEntityBase_Container {
 
-
-    public TileEntityCartDetector() {
-        super();
+    public TileEntityCartDetectorItems() {
+        super(9, false, false);
     }
 
 
@@ -33,4 +26,12 @@ public class TileEntityCartDetector extends TileEntityBase_Directional implement
         }
     }
 
+    @Override
+    /**
+     * Get the name of this object. For players this returns their username
+     */
+    public String getName()
+    {
+        return this.hasCustomName() ? this.customName : "container.realmsofavalonmod.cartdetectoritems";
+    }
 }

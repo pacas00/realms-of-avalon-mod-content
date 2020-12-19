@@ -1,9 +1,12 @@
 package net.petercashel.RealmsOfAvalonMod.Blocks;
 
+import com.google.common.base.Predicate;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.item.EntityMinecartChest;
@@ -15,33 +18,49 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
 import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonMod;
-import net.petercashel.RealmsOfAvalonMod.TileEntity.TileEntityCartItemLoader;
-import net.petercashel.RealmsOfAvalonMod.TileEntity.TileEntityCartItemUnLoader;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.TileEntityCartDetectorFluids;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.TileEntityCartDetectorItems;
 
 import java.util.List;
 
-public class BlockCartItemUnLoader extends BlockCartLoaderBase implements IInitEvents, ITileEntityProvider {
+public class BlockCartDetectorFluids extends BlockCartLoaderBase implements IInitEvents, ITileEntityProvider {
 
-    public BlockCartItemUnLoader() {
+
+    public BlockCartDetectorFluids() {
         super(Material.ROCK);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+        this.setCreativeTab(CreativeTabs.REDSTONE);
         this.requiresUpdates();
         this.needsRandomTick = true;
+    }
+
+
+    /**
+     * Returns a new instance of a block's tile entity class. Called on placing the block.
+     */
+    public TileEntity createNewTileEntity(World worldIn, int meta)
+    {
+        return new TileEntityCartDetectorFluids();
+    }
+
+    /**
+     * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
+     * IBlockstate
+     */
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+    {
+        return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
     }
 
     /**
@@ -57,22 +76,13 @@ public class BlockCartItemUnLoader extends BlockCartLoaderBase implements IInitE
         {
             TileEntity tileentity = worldIn.getTileEntity(pos);
 
-            if (tileentity instanceof TileEntityCartItemUnLoader)
+            if (tileentity instanceof TileEntityCartDetectorFluids)
             {
-                playerIn.displayGUIChest((TileEntityCartItemUnLoader)tileentity);
-                //playerIn.sendStatusMessage(new TextComponentString("Stored: " + ((TileEntityCartItemUnLoader)tileentity).getFluidStored(EnumFacing.SOUTH) + "/" + ((TileEntityCartItemUnLoader)tileentity).getMaxFluidStored(EnumFacing.SOUTH)), true);
+                playerIn.displayGUIChest((TileEntityCartDetectorFluids)tileentity);
             }
 
             return true;
         }
-    }
-
-    /**
-     * Returns a new instance of a block's tile entity class. Called on placing the block.
-     */
-    public TileEntity createNewTileEntity(World worldIn, int meta)
-    {
-        return new TileEntityCartItemUnLoader();
     }
 
     /**
@@ -86,9 +96,9 @@ public class BlockCartItemUnLoader extends BlockCartLoaderBase implements IInitE
         {
             TileEntity tileentity = worldIn.getTileEntity(pos);
 
-            if (tileentity instanceof TileEntityCartItemUnLoader)
+            if (tileentity instanceof TileEntityCartDetectorFluids)
             {
-                //((TileEntityCartItemUnLoader)tileentity).setCustomName(stack.getDisplayName());
+                //((TileEntityCartDetectorFluids)tileentity).setCustomName(stack.getDisplayName());
             }
         }
     }
@@ -100,7 +110,7 @@ public class BlockCartItemUnLoader extends BlockCartLoaderBase implements IInitE
     {
         TileEntity tileentity = worldIn.getTileEntity(pos);
 
-        if (tileentity instanceof TileEntityCartItemUnLoader)
+        if (tileentity instanceof TileEntityCartDetectorFluids)
         {
 //            InventoryHelper.dropInventoryItems(worldIn, pos, (TileEntityDispenser)tileentity);
 //            worldIn.updateComparatorOutputLevel(pos, this);
@@ -109,68 +119,51 @@ public class BlockCartItemUnLoader extends BlockCartLoaderBase implements IInitE
         super.breakBlock(worldIn, pos, state);
     }
 
+
+    @Override
+    protected AxisAlignedBB getDectectionBox(BlockPos pos)
+    {
+        float f = 0.3F;
+        return new AxisAlignedBB((double)((float)pos.getX() + f), (double)((float)pos.getY() + f), (double)((float)pos.getZ() + f), (double)((float)(pos.getX() + 1) - f), (double)((float)(pos.getY() + 1) - f), (double)((float)(pos.getZ() + 1) - f));
+    }
+
+    @Override
+    protected <T extends EntityMinecart> List<T> findMinecarts(World worldIn, BlockPos pos, Class<T> clazz, Predicate<Entity>... filter)
+    {
+        AxisAlignedBB axisalignedbb = this.getDectectionBox(pos);
+        return filter.length != 1 ? worldIn.getEntitiesWithinAABB(clazz, axisalignedbb) : worldIn.getEntitiesWithinAABB(clazz, axisalignedbb, filter[0]);
+    }
+
     @Override
     public void updatePoweredState(World worldIn, BlockPos pos, IBlockState state)
     {
         boolean flag = ((Boolean)state.getValue(POWERED)).booleanValue();
         boolean flag1 = false;
-        boolean didWork = false;
 
         Vec3i facing = ((EnumFacing)state.getValue(FACING)).getDirectionVec();
 
         List<EntityMinecart> list = this.<EntityMinecart>findMinecarts(worldIn, pos.add(facing), EntityMinecart.class);
 
-        if (!list.isEmpty())
-        {
-            flag1 = false;
-        }
-
         if (!list.isEmpty() && list.get(0) instanceof EntityMinecartChest) {
             EntityMinecartChest chestCart = (EntityMinecartChest) list.get(0);
-            TileEntityCartItemUnLoader tileentity = (TileEntityCartItemUnLoader)worldIn.getTileEntity(pos);
-
-            //Get Inventory of cart
-            //Find items that store energy
-            //Try to fill first non-full one
+            //flag1 = !chestCart.isEmpty();
 
             int slots = chestCart.getSizeInventory();
-            boolean TransferedItems = false;
-            flag1 = true;
-
             for (int i = 0; i < slots; i++) {
-                int tSlotId = tileentity.getFirstEmptyItemSlot();
-                if (tSlotId == -1) {
+                ItemStack slot = chestCart.getStackInSlot(i);
+                if (slot == null) {
                     continue;
                 }
-                ItemStack tSlot = tileentity.getStackInSlot(tSlotId);
-                ItemStack slot = chestCart.getStackInSlot(i);
-                if (tSlot == null) {
+                if (slot.isEmpty()) {
                     continue;
                 }
 
-                if (!slot.isEmpty()) {
-                    //Transfer and Go!
-                    IItemHandlerModifiable handlerModifiable = (IItemHandlerModifiable)chestCart.itemHandler;
-                    if (handlerModifiable != null) {
-                        ItemStack retStack = ItemHandlerHelper.insertItem(tileentity, slot, false);
-                        handlerModifiable.setStackInSlot(i, retStack);
-                    }
-                    TransferedItems = true;
+                if (slot.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
+                    flag1 = true;
                     break;
                 }
-
-
             }
-
-            if (TransferedItems) {
-                flag1 = false;
-            }
-
-        } else if (!list.isEmpty() && !(list.get(0) instanceof EntityMinecartChest)) {
-            //Go away
-            flag1 = true;
         }
-
 
         if (flag1 && !flag)
         {
@@ -188,7 +181,7 @@ public class BlockCartItemUnLoader extends BlockCartLoaderBase implements IInitE
             worldIn.markBlockRangeForRenderUpdate(pos, pos);
         }
 
-        if (flag1 || didWork)
+        if (flag1)
         {
             worldIn.scheduleUpdate(new BlockPos(pos), this, this.tickRate(worldIn));
         }
@@ -196,23 +189,21 @@ public class BlockCartItemUnLoader extends BlockCartLoaderBase implements IInitE
         worldIn.updateComparatorOutputLevel(pos, this);
     }
 
-
-
     @Override
     public boolean PreInit(FMLPreInitializationEvent event) {
-        this.setUnlocalizedName(event.getModMetadata().modId + "." + "cartitemunloader");
-        this.setRegistryName("cartitemunloader");
+        this.setUnlocalizedName(event.getModMetadata().modId + "." + "cartdetectorfluids");
+        this.setRegistryName("cartdetectorfluids");
         ForgeRegistries.BLOCKS.register(this);
 
         itemBlock = new ItemBlock(this);
-        itemBlock.setUnlocalizedName(event.getModMetadata().modId + "." + "cartitemunloader");
+        itemBlock.setUnlocalizedName(event.getModMetadata().modId + "." + "cartdetectorfluids");
         itemBlock.setRegistryName(this.getRegistryName());
 
         ForgeRegistries.ITEMS.register(itemBlock);
 
         ResourceLocation loc = ForgeRegistries.BLOCKS.getKey(this);
-        //GameRegistry.registerTileEntity(TileEntityCartItemUnLoader.class, loc.toString());
-        TileEntityCartItemUnLoader.register(loc.toString(), TileEntityCartItemUnLoader.class);
+        //GameRegistry.registerTileEntity(TileEntityCartDetectorFluids.class, loc.toString());
+        TileEntityCartDetectorFluids.register(loc.toString(), TileEntityCartDetectorFluids.class);
 
         this.setCreativeTab(RealmsOfAvalonMod.modTab);
         itemBlock.setCreativeTab(RealmsOfAvalonMod.modTab);

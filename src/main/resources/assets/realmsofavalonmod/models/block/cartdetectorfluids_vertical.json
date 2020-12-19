@@ -1,0 +1,10 @@
+{
+  "parent": "block/orientable_vertical",
+  "textures": {
+    "front": "realmsofavalonmod:blocks/detector_front_vertical",
+    "down": "realmsofavalonmod:blocks/furnace_redstone_vertical",
+    "north": "realmsofavalonmod:blocks/cartfluidloader_front_vertical",
+    "south": "realmsofavalonmod:blocks/cartfluidloader_front_vertical",
+    "side": "realmsofavalonmod:blocks/furnace_top"
+  }
+}

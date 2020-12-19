@@ -12,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityDispenser;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
@@ -60,6 +61,7 @@ public class BlockCartItemLoader extends BlockCartLoaderBase implements IInitEve
 
             if (tileentity instanceof TileEntityCartItemLoader)
             {
+                playerIn.displayGUIChest((TileEntityCartItemLoader)tileentity);
                 //playerIn.sendStatusMessage(new TextComponentString("Stored: " + ((TileEntityCartItemLoader)tileentity).getFluidStored(EnumFacing.SOUTH) + "/" + ((TileEntityCartItemLoader)tileentity).getMaxFluidStored(EnumFacing.SOUTH)), true);
             }
 

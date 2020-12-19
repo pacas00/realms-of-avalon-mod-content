@@ -1,11 +1,18 @@
 package net.petercashel.RealmsOfAvalonMod.TileEntity;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ContainerDispenser;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -15,7 +22,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityBase_Container extends TileEntityBase_Directional implements IItemHandlerModifiable {
+public class TileEntityBase_Container extends TileEntityBase_Directional implements IItemHandlerModifiable, IInventory {
 
     public TileEntityBase_Container(int InventorySize, boolean AllowExtraction, boolean AllowInsert) {
         super();
@@ -29,6 +36,7 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
     private int InventorySize = 1;
     public boolean AllowExtraction = false;
     public boolean AllowInsert = false;
+    protected String customName;
 
     /**
      * Returns the number of slots in the inventory.
@@ -274,6 +282,11 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
 
         AllowExtraction = compound.getBoolean("AllowExtraction");
         AllowInsert = compound.getBoolean("AllowInsert");
+
+        if (compound.hasKey("CustomName", 8))
+        {
+            this.customName = compound.getString("CustomName");
+        }
     }
 
     @Override
@@ -287,6 +300,11 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
         compound.setBoolean("AllowExtraction", AllowExtraction);
         compound.setBoolean("AllowInsert", AllowInsert);
 
+        if (this.hasCustomName())
+        {
+            compound.setString("CustomName", this.customName);
+        }
+
         return compound;
     }
 
@@ -298,6 +316,32 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
         return 64;
     }
 
+    @Override
+    /**
+     * Don't rename this method to canInteractWith due to conflicts with Container
+     */
+    public boolean isUsableByPlayer(EntityPlayer player)
+    {
+        if (this.world.getTileEntity(this.pos) != this)
+        {
+            return false;
+        }
+        else
+        {
+            return player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
+        }
+    }
+
+    @Override
+    public void openInventory(EntityPlayer player) {
+
+    }
+
+    @Override
+    public void closeInventory(EntityPlayer player) {
+
+    }
+
     /**
      * Returns true if automation is allowed to insert the given stack (ignoring stack size) into the given slot. For
      * guis use Slot.isItemValid
@@ -305,6 +349,26 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
     public boolean isItemValidForSlot(int index, ItemStack stack)
     {
         return true;
+    }
+
+    @Override
+    public int getField(int id) {
+        return 0;
+    }
+
+    @Override
+    public void setField(int id, int value) {
+
+    }
+
+    @Override
+    public int getFieldCount() {
+        return 0;
+    }
+
+    @Override
+    public void clear() {
+       //this.getItems().clear();
     }
 
     @Override
@@ -338,5 +402,46 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
             }
         }
         return -1;
+    }
+
+    @Override
+    /**
+     * Get the name of this object. For players this returns their username
+     */
+    public String getName()
+    {
+        return this.hasCustomName() ? this.customName : "container.dispenser";
+    }
+
+    @Override
+    /**
+     * Returns true if this thing is named
+     */
+    public boolean hasCustomName()
+    {
+        return this.customName != null && !this.customName.isEmpty();
+    }
+
+    public void setCustomName(String p_190575_1_)
+    {
+        this.customName = p_190575_1_;
+    }
+
+    /**
+     * Get the formatted ChatComponent that will be used for the sender's username in chat
+     */
+    public ITextComponent getDisplayName()
+    {
+        return (ITextComponent)(this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName(), new Object[0]));
+    }
+
+    public String getGuiID()
+    {
+        return "minecraft:dispenser";
+    }
+
+    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)
+    {
+        return new ContainerDispenser(playerInventory, this);
     }
 }

@@ -15,6 +15,10 @@ public class BlockInit {
     public static void PreInit(FMLPreInitializationEvent event) {
 
         blockCartDetector = new BlockCartDetector();
+        blockCartDetectorItems = new BlockCartDetectorItems();
+        blockCartDetectorFluids = new BlockCartDetectorFluids();
+        blockCartDetectorEnergy = new BlockCartDetectorEnergy();
+
         blockCartEnergyLoader = new BlockCartEnergyLoader();
         blockCartEnergyUnLoader = new BlockCartEnergyUnLoader();
 
@@ -25,6 +29,10 @@ public class BlockInit {
         blockCartItemUnLoader = new BlockCartItemUnLoader();
 
         initList.add(blockCartDetector);
+        initList.add(blockCartDetectorItems);
+        initList.add(blockCartDetectorFluids);
+        initList.add(blockCartDetectorEnergy);
+
         initList.add(blockCartEnergyLoader);
         initList.add(blockCartEnergyUnLoader);
 
@@ -57,6 +65,11 @@ public class BlockInit {
 
     /* REFERENCES */
     public static BlockCartDetector blockCartDetector;
+    public static BlockCartDetectorItems blockCartDetectorItems;
+    public static BlockCartDetectorFluids blockCartDetectorFluids;
+    public static BlockCartDetectorEnergy blockCartDetectorEnergy;
+
+
     public static BlockCartEnergyLoader blockCartEnergyLoader;
     public static BlockCartEnergyUnLoader blockCartEnergyUnLoader;
 

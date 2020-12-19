@@ -22,4 +22,13 @@ public class TileEntityCartItemUnLoader extends TileEntityBase_Container {
             }
         }
     }
+
+    @Override
+    /**
+     * Get the name of this object. For players this returns their username
+     */
+    public String getName()
+    {
+        return this.hasCustomName() ? this.customName : "container.realmsofavalonmod.cartitemunloader";
+    }
 }

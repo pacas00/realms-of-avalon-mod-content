@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "inventory": { "model": "realmsofavalonmod:cartdetectorfluids" },
+
+    "facing=down,powered=false":  { "model": "realmsofavalonmod:cartdetectorfluids_vertical", "x": 180 },
+    "facing=up,powered=false":    { "model": "realmsofavalonmod:cartdetectorfluids_vertical" },
+    "facing=north,powered=false": { "model": "realmsofavalonmod:cartdetectorfluids" },
+    "facing=south,powered=false": { "model": "realmsofavalonmod:cartdetectorfluids", "y": 180 },
+    "facing=west,powered=false":  { "model": "realmsofavalonmod:cartdetectorfluids", "y": 270 },
+    "facing=east,powered=false":  { "model": "realmsofavalonmod:cartdetectorfluids", "y": 90 },
+
+    "facing=down,powered=true":  { "model": "realmsofavalonmod:cartdetectorfluids_vertical", "x": 180 },
+    "facing=up,powered=true":    { "model": "realmsofavalonmod:cartdetectorfluids_vertical" },
+    "facing=north,powered=true": { "model": "realmsofavalonmod:cartdetectorfluids" },
+    "facing=south,powered=true": { "model": "realmsofavalonmod:cartdetectorfluids", "y": 180 },
+    "facing=west,powered=true":  { "model": "realmsofavalonmod:cartdetectorfluids", "y": 270 },
+    "facing=east,powered=true":  { "model": "realmsofavalonmod:cartdetectorfluids", "y": 90 }
+  }
+}
