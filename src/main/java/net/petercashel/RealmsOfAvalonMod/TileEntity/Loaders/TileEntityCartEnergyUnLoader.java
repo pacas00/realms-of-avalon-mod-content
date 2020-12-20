@@ -1,25 +1,15 @@
-package net.petercashel.RealmsOfAvalonMod.TileEntity;
+package net.petercashel.RealmsOfAvalonMod.TileEntity.Loaders;
 
-import cofh.api.tileentity.IEnergyInfo;
 import cofh.core.util.helpers.EnergyHelper;
-import cofh.core.util.helpers.MathHelper;
 import cofh.redstoneflux.api.IEnergyConnection;
 import cofh.redstoneflux.api.IEnergyProvider;
-import cofh.redstoneflux.api.IEnergyReceiver;
 import cofh.redstoneflux.api.IEnergyStorage;
-import cofh.redstoneflux.impl.EnergyStorage;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartEnergyLoader;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartEnergyUnLoader;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Loaders.BlockCartEnergyUnLoader;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.Core.TileEntityBase_PowerGenerator;
 
 public class TileEntityCartEnergyUnLoader extends TileEntityBase_PowerGenerator implements ITickable, IEnergyProvider, IEnergyStorage, IEnergyConnection {
     public TileEntityCartEnergyUnLoader() {

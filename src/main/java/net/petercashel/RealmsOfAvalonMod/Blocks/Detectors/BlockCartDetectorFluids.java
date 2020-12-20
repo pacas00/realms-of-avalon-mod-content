@@ -1,47 +1,43 @@
-package net.petercashel.RealmsOfAvalonMod.Blocks;
+package net.petercashel.RealmsOfAvalonMod.Blocks.Detectors;
 
 import com.google.common.base.Predicate;
-import net.minecraft.block.BlockContainer;
-import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.dispenser.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityMinecart;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.item.EntityMinecartChest;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Core.BlockCartLoaderBase;
 import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
 import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonMod;
-import net.petercashel.RealmsOfAvalonMod.TileEntity.TileEntityCartDetector;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.Detectors.TileEntityCartDetectorFluids;
 
 import java.util.List;
-import java.util.Random;
 
-public class BlockCartDetector extends BlockCartLoaderBase implements IInitEvents, ITileEntityProvider {
+public class BlockCartDetectorFluids extends BlockCartLoaderBase implements IInitEvents, ITileEntityProvider {
 
 
-    public BlockCartDetector() {
+    public BlockCartDetectorFluids() {
         super(Material.ROCK);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
         this.setCreativeTab(CreativeTabs.REDSTONE);
@@ -55,7 +51,7 @@ public class BlockCartDetector extends BlockCartLoaderBase implements IInitEvent
      */
     public TileEntity createNewTileEntity(World worldIn, int meta)
     {
-        return new TileEntityCartDetector();
+        return new TileEntityCartDetectorFluids();
     }
 
     /**
@@ -65,6 +61,28 @@ public class BlockCartDetector extends BlockCartLoaderBase implements IInitEvent
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
         return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
+    }
+
+    /**
+     * Called when the block is right clicked by a player.
+     */
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    {
+        if (worldIn.isRemote)
+        {
+            return true;
+        }
+        else
+        {
+            TileEntity tileentity = worldIn.getTileEntity(pos);
+
+            if (tileentity instanceof TileEntityCartDetectorFluids)
+            {
+                playerIn.displayGUIChest((TileEntityCartDetectorFluids)tileentity);
+            }
+
+            return true;
+        }
     }
 
     /**
@@ -78,9 +96,9 @@ public class BlockCartDetector extends BlockCartLoaderBase implements IInitEvent
         {
             TileEntity tileentity = worldIn.getTileEntity(pos);
 
-            if (tileentity instanceof TileEntityCartDetector)
+            if (tileentity instanceof TileEntityCartDetectorFluids)
             {
-                //((TileEntityCartDetector)tileentity).setCustomName(stack.getDisplayName());
+                //((TileEntityCartDetectorFluids)tileentity).setCustomName(stack.getDisplayName());
             }
         }
     }
@@ -92,7 +110,7 @@ public class BlockCartDetector extends BlockCartLoaderBase implements IInitEvent
     {
         TileEntity tileentity = worldIn.getTileEntity(pos);
 
-        if (tileentity instanceof TileEntityCartDetector)
+        if (tileentity instanceof TileEntityCartDetectorFluids)
         {
 //            InventoryHelper.dropInventoryItems(worldIn, pos, (TileEntityDispenser)tileentity);
 //            worldIn.updateComparatorOutputLevel(pos, this);
@@ -126,9 +144,25 @@ public class BlockCartDetector extends BlockCartLoaderBase implements IInitEvent
 
         List<EntityMinecart> list = this.<EntityMinecart>findMinecarts(worldIn, pos.add(facing), EntityMinecart.class);
 
-        if (!list.isEmpty())
-        {
-            flag1 = true;
+        if (!list.isEmpty() && list.get(0) instanceof EntityMinecartChest) {
+            EntityMinecartChest chestCart = (EntityMinecartChest) list.get(0);
+            //flag1 = !chestCart.isEmpty();
+
+            int slots = chestCart.getSizeInventory();
+            for (int i = 0; i < slots; i++) {
+                ItemStack slot = chestCart.getStackInSlot(i);
+                if (slot == null) {
+                    continue;
+                }
+                if (slot.isEmpty()) {
+                    continue;
+                }
+
+                if (slot.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
+                    flag1 = true;
+                    break;
+                }
+            }
         }
 
         if (flag1 && !flag)
@@ -157,19 +191,19 @@ public class BlockCartDetector extends BlockCartLoaderBase implements IInitEvent
 
     @Override
     public boolean PreInit(FMLPreInitializationEvent event) {
-        this.setUnlocalizedName(event.getModMetadata().modId + "." + "cartdetector");
-        this.setRegistryName("cartdetector");
+        this.setUnlocalizedName(event.getModMetadata().modId + "." + "cartdetectorfluids");
+        this.setRegistryName("cartdetectorfluids");
         ForgeRegistries.BLOCKS.register(this);
 
         itemBlock = new ItemBlock(this);
-        itemBlock.setUnlocalizedName(event.getModMetadata().modId + "." + "cartdetector");
+        itemBlock.setUnlocalizedName(event.getModMetadata().modId + "." + "cartdetectorfluids");
         itemBlock.setRegistryName(this.getRegistryName());
 
         ForgeRegistries.ITEMS.register(itemBlock);
 
         ResourceLocation loc = ForgeRegistries.BLOCKS.getKey(this);
-        //GameRegistry.registerTileEntity(TileEntityCartDetector.class, loc.toString());
-        TileEntityCartDetector.register(loc.toString(), TileEntityCartDetector.class);
+        //GameRegistry.registerTileEntity(TileEntityCartDetectorFluids.class, loc.toString());
+        TileEntityCartDetectorFluids.register(loc.toString(), TileEntityCartDetectorFluids.class);
 
         this.setCreativeTab(RealmsOfAvalonMod.modTab);
         itemBlock.setCreativeTab(RealmsOfAvalonMod.modTab);

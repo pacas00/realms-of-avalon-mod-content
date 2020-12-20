@@ -3,7 +3,11 @@ package net.petercashel.RealmsOfAvalonMod.Init;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.petercashel.RealmsOfAvalonMod.Blocks.*;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Detectors.BlockCartDetector;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Detectors.BlockCartDetectorEnergy;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Detectors.BlockCartDetectorFluids;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Detectors.BlockCartDetectorItems;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Loaders.*;
 import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
 
 import java.util.ArrayList;

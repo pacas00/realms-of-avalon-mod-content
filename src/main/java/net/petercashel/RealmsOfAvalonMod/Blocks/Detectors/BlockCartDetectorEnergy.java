@@ -1,4 +1,4 @@
-package net.petercashel.RealmsOfAvalonMod.Blocks;
+package net.petercashel.RealmsOfAvalonMod.Blocks.Detectors;
 
 import com.google.common.base.Predicate;
 import net.minecraft.block.ITileEntityProvider;
@@ -10,34 +10,32 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.item.EntityMinecartChest;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Core.BlockCartLoaderBase;
 import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
 import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonMod;
-import net.petercashel.RealmsOfAvalonMod.TileEntity.TileEntityCartDetectorFluids;
-import net.petercashel.RealmsOfAvalonMod.TileEntity.TileEntityCartDetectorItems;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.Detectors.TileEntityCartDetectorEnergy;
 
 import java.util.List;
 
-public class BlockCartDetectorFluids extends BlockCartLoaderBase implements IInitEvents, ITileEntityProvider {
+public class BlockCartDetectorEnergy extends BlockCartLoaderBase implements IInitEvents, ITileEntityProvider {
 
 
-    public BlockCartDetectorFluids() {
+    public BlockCartDetectorEnergy() {
         super(Material.ROCK);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
         this.setCreativeTab(CreativeTabs.REDSTONE);
@@ -51,7 +49,7 @@ public class BlockCartDetectorFluids extends BlockCartLoaderBase implements IIni
      */
     public TileEntity createNewTileEntity(World worldIn, int meta)
     {
-        return new TileEntityCartDetectorFluids();
+        return new TileEntityCartDetectorEnergy();
     }
 
     /**
@@ -61,28 +59,6 @@ public class BlockCartDetectorFluids extends BlockCartLoaderBase implements IIni
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
         return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
-    }
-
-    /**
-     * Called when the block is right clicked by a player.
-     */
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    {
-        if (worldIn.isRemote)
-        {
-            return true;
-        }
-        else
-        {
-            TileEntity tileentity = worldIn.getTileEntity(pos);
-
-            if (tileentity instanceof TileEntityCartDetectorFluids)
-            {
-                playerIn.displayGUIChest((TileEntityCartDetectorFluids)tileentity);
-            }
-
-            return true;
-        }
     }
 
     /**
@@ -96,9 +72,9 @@ public class BlockCartDetectorFluids extends BlockCartLoaderBase implements IIni
         {
             TileEntity tileentity = worldIn.getTileEntity(pos);
 
-            if (tileentity instanceof TileEntityCartDetectorFluids)
+            if (tileentity instanceof TileEntityCartDetectorEnergy)
             {
-                //((TileEntityCartDetectorFluids)tileentity).setCustomName(stack.getDisplayName());
+                //((TileEntityCartDetectorEnergy)tileentity).setCustomName(stack.getDisplayName());
             }
         }
     }
@@ -110,7 +86,7 @@ public class BlockCartDetectorFluids extends BlockCartLoaderBase implements IIni
     {
         TileEntity tileentity = worldIn.getTileEntity(pos);
 
-        if (tileentity instanceof TileEntityCartDetectorFluids)
+        if (tileentity instanceof TileEntityCartDetectorEnergy)
         {
 //            InventoryHelper.dropInventoryItems(worldIn, pos, (TileEntityDispenser)tileentity);
 //            worldIn.updateComparatorOutputLevel(pos, this);
@@ -158,7 +134,7 @@ public class BlockCartDetectorFluids extends BlockCartLoaderBase implements IIni
                     continue;
                 }
 
-                if (slot.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
+                if (slot.hasCapability(CapabilityEnergy.ENERGY, null)) {
                     flag1 = true;
                     break;
                 }
@@ -191,19 +167,19 @@ public class BlockCartDetectorFluids extends BlockCartLoaderBase implements IIni
 
     @Override
     public boolean PreInit(FMLPreInitializationEvent event) {
-        this.setUnlocalizedName(event.getModMetadata().modId + "." + "cartdetectorfluids");
-        this.setRegistryName("cartdetectorfluids");
+        this.setUnlocalizedName(event.getModMetadata().modId + "." + "cartdetectorenergy");
+        this.setRegistryName("cartdetectorenergy");
         ForgeRegistries.BLOCKS.register(this);
 
         itemBlock = new ItemBlock(this);
-        itemBlock.setUnlocalizedName(event.getModMetadata().modId + "." + "cartdetectorfluids");
+        itemBlock.setUnlocalizedName(event.getModMetadata().modId + "." + "cartdetectorenergy");
         itemBlock.setRegistryName(this.getRegistryName());
 
         ForgeRegistries.ITEMS.register(itemBlock);
 
         ResourceLocation loc = ForgeRegistries.BLOCKS.getKey(this);
-        //GameRegistry.registerTileEntity(TileEntityCartDetectorFluids.class, loc.toString());
-        TileEntityCartDetectorFluids.register(loc.toString(), TileEntityCartDetectorFluids.class);
+        //GameRegistry.registerTileEntity(TileEntityCartDetectorEnergy.class, loc.toString());
+        TileEntityCartDetectorEnergy.register(loc.toString(), TileEntityCartDetectorEnergy.class);
 
         this.setCreativeTab(RealmsOfAvalonMod.modTab);
         itemBlock.setCreativeTab(RealmsOfAvalonMod.modTab);

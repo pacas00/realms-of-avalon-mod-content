@@ -1,4 +1,4 @@
-package net.petercashel.RealmsOfAvalonMod.Blocks;
+package net.petercashel.RealmsOfAvalonMod.Blocks.Loaders;
 
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -26,9 +26,10 @@ import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Core.BlockCartLoaderBase;
 import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
 import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonMod;
-import net.petercashel.RealmsOfAvalonMod.TileEntity.TileEntityCartFluidUnLoader;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.Loaders.TileEntityCartFluidUnLoader;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package net.petercashel.RealmsOfAvalonMod.TileEntity;
+package net.petercashel.RealmsOfAvalonMod.TileEntity.Core;
 
 import cofh.redstoneflux.api.IEnergyReceiver;
 import cofh.redstoneflux.impl.EnergyStorage;

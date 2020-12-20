@@ -1,19 +1,9 @@
-package net.petercashel.RealmsOfAvalonMod.TileEntity;
+package net.petercashel.RealmsOfAvalonMod.TileEntity.Loaders;
 
-import cofh.redstoneflux.api.IEnergyReceiver;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartEnergyLoader;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartFluidLoader;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Loaders.BlockCartFluidLoader;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.Core.TileEntityBase_FluidDevice;
 
 public class TileEntityCartFluidLoader extends TileEntityBase_FluidDevice implements ITickable {
 

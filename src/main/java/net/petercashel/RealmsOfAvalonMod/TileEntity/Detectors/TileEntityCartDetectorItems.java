@@ -1,10 +1,12 @@
-package net.petercashel.RealmsOfAvalonMod.TileEntity;
+package net.petercashel.RealmsOfAvalonMod.TileEntity.Detectors;
 
 import net.minecraft.block.state.IBlockState;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartLoaderBase;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Core.BlockCartLoaderBase;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.Core.TileEntityBase_Container;
 
-public class TileEntityCartDetectorFluids extends TileEntityBase_Container {
-    public TileEntityCartDetectorFluids() {
+public class TileEntityCartDetectorItems extends TileEntityBase_Container {
+
+    public TileEntityCartDetectorItems() {
         super(9, false, false);
     }
 
@@ -31,6 +33,6 @@ public class TileEntityCartDetectorFluids extends TileEntityBase_Container {
      */
     public String getName()
     {
-        return this.hasCustomName() ? this.customName : "container.realmsofavalonmod.cartdetectorfluids";
+        return this.hasCustomName() ? this.customName : "container.realmsofavalonmod.cartdetectoritems";
     }
 }

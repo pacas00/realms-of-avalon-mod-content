@@ -1,4 +1,4 @@
-package net.petercashel.RealmsOfAvalonMod.Blocks;
+package net.petercashel.RealmsOfAvalonMod.Blocks.Loaders;
 
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -12,9 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.text.TextComponentString;
@@ -22,21 +20,19 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Core.BlockCartLoaderBase;
 import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
 import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonMod;
-import net.petercashel.RealmsOfAvalonMod.TileEntity.TileEntityCartFluidLoader;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.Loaders.TileEntityCartEnergyLoader;
 
 import java.util.List;
 
-public class BlockCartFluidLoader extends BlockCartLoaderBase implements IInitEvents, ITileEntityProvider {
+public class BlockCartEnergyLoader extends BlockCartLoaderBase implements IInitEvents, ITileEntityProvider {
 
-    public BlockCartFluidLoader() {
+    public BlockCartEnergyLoader() {
         super(Material.ROCK);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
         this.requiresUpdates();
@@ -56,9 +52,9 @@ public class BlockCartFluidLoader extends BlockCartLoaderBase implements IInitEv
         {
             TileEntity tileentity = worldIn.getTileEntity(pos);
 
-            if (tileentity instanceof TileEntityCartFluidLoader)
+            if (tileentity instanceof TileEntityCartEnergyLoader)
             {
-                playerIn.sendStatusMessage(new TextComponentString("Stored: " + ((TileEntityCartFluidLoader)tileentity).getFluidStored(EnumFacing.SOUTH) + "/" + ((TileEntityCartFluidLoader)tileentity).getMaxFluidStored(EnumFacing.SOUTH)), true);
+                playerIn.sendStatusMessage(new TextComponentString("Stored: " + ((TileEntityCartEnergyLoader)tileentity).getEnergyStored(EnumFacing.SOUTH) + "/" + ((TileEntityCartEnergyLoader)tileentity).getMaxEnergyStored(EnumFacing.SOUTH)), true);
             }
 
             return true;
@@ -70,7 +66,7 @@ public class BlockCartFluidLoader extends BlockCartLoaderBase implements IInitEv
      */
     public TileEntity createNewTileEntity(World worldIn, int meta)
     {
-        return new TileEntityCartFluidLoader();
+        return new TileEntityCartEnergyLoader();
     }
 
     /**
@@ -84,9 +80,9 @@ public class BlockCartFluidLoader extends BlockCartLoaderBase implements IInitEv
         {
             TileEntity tileentity = worldIn.getTileEntity(pos);
 
-            if (tileentity instanceof TileEntityCartFluidLoader)
+            if (tileentity instanceof TileEntityCartEnergyLoader)
             {
-                //((TileEntityCartFluidLoader)tileentity).setCustomName(stack.getDisplayName());
+                //((TileEntityCartEnergyLoader)tileentity).setCustomName(stack.getDisplayName());
             }
         }
     }
@@ -98,7 +94,7 @@ public class BlockCartFluidLoader extends BlockCartLoaderBase implements IInitEv
     {
         TileEntity tileentity = worldIn.getTileEntity(pos);
 
-        if (tileentity instanceof TileEntityCartFluidLoader)
+        if (tileentity instanceof TileEntityCartEnergyLoader)
         {
 //            InventoryHelper.dropInventoryItems(worldIn, pos, (TileEntityDispenser)tileentity);
 //            worldIn.updateComparatorOutputLevel(pos, this);
@@ -125,14 +121,14 @@ public class BlockCartFluidLoader extends BlockCartLoaderBase implements IInitEv
 
         if (!list.isEmpty() && list.get(0) instanceof EntityMinecartChest) {
             EntityMinecartChest chestCart = (EntityMinecartChest) list.get(0);
-            TileEntityCartFluidLoader tileentity = (TileEntityCartFluidLoader)worldIn.getTileEntity(pos);
+            TileEntityCartEnergyLoader tileentity = (TileEntityCartEnergyLoader)worldIn.getTileEntity(pos);
 
             //Get Inventory of cart
             //Find items that store energy
             //Try to fill first non-full one
 
             int slots = chestCart.getSizeInventory();
-            boolean TransferedFluid = false;
+            boolean TransferedEnergy = false;
             flag1 = true;
 
             for (int i = 0; i < slots; i++) {
@@ -148,56 +144,45 @@ public class BlockCartFluidLoader extends BlockCartLoaderBase implements IInitEv
                     continue;
                 }
 
-                if (!slot.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
+                if (!slot.hasCapability(CapabilityEnergy.ENERGY, null)) {
                     continue;
                 }
-                IFluidHandlerItem item = slot.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+                IEnergyStorage item = slot.getCapability(CapabilityEnergy.ENERGY, null);
 
-                if (item == null || item.getTankProperties() == null || item.getTankProperties().length == 0) {
-                    continue;
-                }
-
-                net.minecraftforge.fluids.capability.IFluidTankProperties[] props = item.getTankProperties();
-
-                int currFluiditem = (props[0].getContents() != null ? props[0].getContents().amount : 0);
-                int maxFluiditem = props[0].getCapacity();
-                int freeFluiditem = maxFluiditem - currFluiditem;
-
-                //Check we can store this here
-                if (!props[0].canFillFluidType(tileentity.getTankFluid())) {
-                    continue;
-                }
+                int currEnergyitem = item.getEnergyStored();
+                int maxEnergyitem = item.getMaxEnergyStored();
+                int freeEnergyitem = maxEnergyitem - currEnergyitem;
 
                 int totalTransfered = 0;
                 for (int j = 0; j < 1; j++)
                 {
-                    if (freeFluiditem == 0) continue;
-                    FluidStack fluidStack = tileentity.getTank().drain(freeFluiditem, false);
-                    int amountToTransfer = item.fill(fluidStack, false);
+                    if (freeEnergyitem == 0) continue;
+                    int amountToTransfer = tileentity.extractEnergy(GetFacing(state).getOpposite(), freeEnergyitem, true);
+                    amountToTransfer = item.receiveEnergy(amountToTransfer, true);
 
-                    fluidStack = tileentity.getTank().drain(amountToTransfer, true);
-                    totalTransfered += item.fill(fluidStack, true);
-                    freeFluiditem = maxFluiditem - currFluiditem;
+                    amountToTransfer = tileentity.extractEnergy(GetFacing(state).getOpposite(), amountToTransfer, false);
+                    totalTransfered += item.receiveEnergy(amountToTransfer, false);
+                    freeEnergyitem = maxEnergyitem - currEnergyitem;
                 }
 
                 if (totalTransfered != 0) {
                     //We transfered something this tick. Don't lock the system up.
-                    TransferedFluid = true;
+                    TransferedEnergy = true;
                     break;
                 }
 
-                currFluiditem = (props[0].getContents() != null ? props[0].getContents().amount : 0);
-                freeFluiditem = maxFluiditem - currFluiditem;
+                currEnergyitem = item.getEnergyStored();
+                freeEnergyitem = maxEnergyitem - currEnergyitem;
 
                 if (i == slots - 1) {
                     //Last slot. Always set going here if null or full.
                     if (slot == null || slot.isEmpty()) flag1 = true;
-                    if (freeFluiditem == 0) flag1 = true;
+                    if (freeEnergyitem == 0) flag1 = true;
                     if (totalTransfered == 0) flag1 = true;
                 }
             }
 
-            if (TransferedFluid) {
+            if (TransferedEnergy) {
                 flag1 = false;
             }
 
@@ -236,19 +221,19 @@ public class BlockCartFluidLoader extends BlockCartLoaderBase implements IInitEv
 
     @Override
     public boolean PreInit(FMLPreInitializationEvent event) {
-        this.setUnlocalizedName(event.getModMetadata().modId + "." + "cartfluidloader");
-        this.setRegistryName("cartfluidloader");
+        this.setUnlocalizedName(event.getModMetadata().modId + "." + "cartenergyloader");
+        this.setRegistryName("cartenergyloader");
         ForgeRegistries.BLOCKS.register(this);
 
         itemBlock = new ItemBlock(this);
-        itemBlock.setUnlocalizedName(event.getModMetadata().modId + "." + "cartfluidloader");
+        itemBlock.setUnlocalizedName(event.getModMetadata().modId + "." + "cartenergyloader");
         itemBlock.setRegistryName(this.getRegistryName());
 
         ForgeRegistries.ITEMS.register(itemBlock);
 
         ResourceLocation loc = ForgeRegistries.BLOCKS.getKey(this);
-        //GameRegistry.registerTileEntity(TileEntityCartFluidLoader.class, loc.toString());
-        TileEntityCartFluidLoader.register(loc.toString(), TileEntityCartFluidLoader.class);
+        //GameRegistry.registerTileEntity(TileEntityCartEnergyLoader.class, loc.toString());
+        TileEntityCartEnergyLoader.register(loc.toString(), TileEntityCartEnergyLoader.class);
 
         this.setCreativeTab(RealmsOfAvalonMod.modTab);
         itemBlock.setCreativeTab(RealmsOfAvalonMod.modTab);

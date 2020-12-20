@@ -1,4 +1,4 @@
-package net.petercashel.RealmsOfAvalonMod.Blocks;
+package net.petercashel.RealmsOfAvalonMod.Blocks.Core;
 
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.BlockDirectional;

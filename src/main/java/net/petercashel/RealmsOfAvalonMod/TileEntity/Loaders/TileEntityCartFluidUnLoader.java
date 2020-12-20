@@ -1,12 +1,11 @@
-package net.petercashel.RealmsOfAvalonMod.TileEntity;
+package net.petercashel.RealmsOfAvalonMod.TileEntity.Loaders;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartFluidLoader;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartFluidUnLoader;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Loaders.BlockCartFluidUnLoader;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.Core.TileEntityBase_FluidDevice;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

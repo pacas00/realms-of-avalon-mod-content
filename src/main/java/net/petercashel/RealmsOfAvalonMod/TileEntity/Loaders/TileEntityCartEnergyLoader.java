@@ -1,15 +1,11 @@
-package net.petercashel.RealmsOfAvalonMod.TileEntity;
+package net.petercashel.RealmsOfAvalonMod.TileEntity.Loaders;
 
 import cofh.redstoneflux.api.IEnergyReceiver;
-import cofh.redstoneflux.impl.EnergyStorage;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.petercashel.RealmsOfAvalonMod.Blocks.*;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Loaders.BlockCartEnergyLoader;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.Core.TileEntityBase_PowerConsumer;
 
 public class TileEntityCartEnergyLoader extends TileEntityBase_PowerConsumer implements ITickable, IEnergyReceiver {
 

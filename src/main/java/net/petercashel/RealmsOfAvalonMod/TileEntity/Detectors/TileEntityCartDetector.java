@@ -1,13 +1,9 @@
-package net.petercashel.RealmsOfAvalonMod.TileEntity;
+package net.petercashel.RealmsOfAvalonMod.TileEntity.Detectors;
 
-import net.minecraft.block.BlockDaylightDetector;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartDetector;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartLoaderBase;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Core.BlockCartLoaderBase;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.Core.TileEntityBase_Directional;
 
 public class TileEntityCartDetector extends TileEntityBase_Directional implements ITickable {
 

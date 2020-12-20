@@ -1,4 +1,4 @@
-package net.petercashel.RealmsOfAvalonMod.TileEntity;
+package net.petercashel.RealmsOfAvalonMod.TileEntity.Core;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
@@ -7,8 +7,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockBase_Directional;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartEnergyUnLoader;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Core.BlockBase_Directional;
 
 public class TileEntityBase_Directional extends TileEntity implements ITickable {
     protected EnumFacing Facing = null;

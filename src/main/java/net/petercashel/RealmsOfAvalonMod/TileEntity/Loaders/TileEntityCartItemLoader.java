@@ -1,7 +1,8 @@
-package net.petercashel.RealmsOfAvalonMod.TileEntity;
+package net.petercashel.RealmsOfAvalonMod.TileEntity.Loaders;
 
 import net.minecraft.block.state.IBlockState;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartItemLoader;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Loaders.BlockCartItemLoader;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.Core.TileEntityBase_Container;
 
 public class TileEntityCartItemLoader extends TileEntityBase_Container {
     public TileEntityCartItemLoader() {

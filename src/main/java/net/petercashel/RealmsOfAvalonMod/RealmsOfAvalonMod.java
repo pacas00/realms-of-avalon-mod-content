@@ -1,14 +1,10 @@
 package net.petercashel.RealmsOfAvalonMod;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IResource;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -20,14 +16,11 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.petercashel.RealmsOfAvalonMod.Blocks.BlockCartDetector;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Detectors.BlockCartDetector;
 import net.petercashel.RealmsOfAvalonMod.Init.BlockInit;
 import net.petercashel.RealmsOfAvalonMod.Init.ItemInit;
 import net.petercashel.RealmsOfAvalonMod.Proxy.IProxy;
 import org.apache.logging.log4j.Logger;
-
-import java.io.IOException;
-import java.util.List;
 
 @Mod(modid = RealmsOfAvalonMod.MODID, name = RealmsOfAvalonMod.NAME, version = RealmsOfAvalonMod.VERSION)
 @Mod.EventBusSubscriber

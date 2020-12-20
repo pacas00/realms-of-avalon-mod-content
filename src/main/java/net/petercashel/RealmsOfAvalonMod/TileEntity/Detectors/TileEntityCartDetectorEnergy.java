@@ -1,4 +1,4 @@
-package net.petercashel.RealmsOfAvalonMod.TileEntity;
+package net.petercashel.RealmsOfAvalonMod.TileEntity.Detectors;
 
 public class TileEntityCartDetectorEnergy extends TileEntityCartDetector {
 }

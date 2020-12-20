@@ -1,4 +1,4 @@
-package net.petercashel.RealmsOfAvalonMod.Blocks;
+package net.petercashel.RealmsOfAvalonMod.Blocks.Detectors;
 
 import com.google.common.base.Predicate;
 import net.minecraft.block.ITileEntityProvider;
@@ -9,33 +9,30 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityMinecart;
-import net.minecraft.entity.item.EntityMinecartChest;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Core.BlockCartLoaderBase;
 import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
 import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonMod;
-import net.petercashel.RealmsOfAvalonMod.TileEntity.TileEntityCartDetectorEnergy;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.Detectors.TileEntityCartDetector;
 
 import java.util.List;
 
-public class BlockCartDetectorEnergy extends BlockCartLoaderBase implements IInitEvents, ITileEntityProvider {
+public class BlockCartDetector extends BlockCartLoaderBase implements IInitEvents, ITileEntityProvider {
 
 
-    public BlockCartDetectorEnergy() {
+    public BlockCartDetector() {
         super(Material.ROCK);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
         this.setCreativeTab(CreativeTabs.REDSTONE);
@@ -49,7 +46,7 @@ public class BlockCartDetectorEnergy extends BlockCartLoaderBase implements IIni
      */
     public TileEntity createNewTileEntity(World worldIn, int meta)
     {
-        return new TileEntityCartDetectorEnergy();
+        return new TileEntityCartDetector();
     }
 
     /**
@@ -72,9 +69,9 @@ public class BlockCartDetectorEnergy extends BlockCartLoaderBase implements IIni
         {
             TileEntity tileentity = worldIn.getTileEntity(pos);
 
-            if (tileentity instanceof TileEntityCartDetectorEnergy)
+            if (tileentity instanceof TileEntityCartDetector)
             {
-                //((TileEntityCartDetectorEnergy)tileentity).setCustomName(stack.getDisplayName());
+                //((TileEntityCartDetector)tileentity).setCustomName(stack.getDisplayName());
             }
         }
     }
@@ -86,7 +83,7 @@ public class BlockCartDetectorEnergy extends BlockCartLoaderBase implements IIni
     {
         TileEntity tileentity = worldIn.getTileEntity(pos);
 
-        if (tileentity instanceof TileEntityCartDetectorEnergy)
+        if (tileentity instanceof TileEntityCartDetector)
         {
 //            InventoryHelper.dropInventoryItems(worldIn, pos, (TileEntityDispenser)tileentity);
 //            worldIn.updateComparatorOutputLevel(pos, this);
@@ -120,25 +117,9 @@ public class BlockCartDetectorEnergy extends BlockCartLoaderBase implements IIni
 
         List<EntityMinecart> list = this.<EntityMinecart>findMinecarts(worldIn, pos.add(facing), EntityMinecart.class);
 
-        if (!list.isEmpty() && list.get(0) instanceof EntityMinecartChest) {
-            EntityMinecartChest chestCart = (EntityMinecartChest) list.get(0);
-            //flag1 = !chestCart.isEmpty();
-
-            int slots = chestCart.getSizeInventory();
-            for (int i = 0; i < slots; i++) {
-                ItemStack slot = chestCart.getStackInSlot(i);
-                if (slot == null) {
-                    continue;
-                }
-                if (slot.isEmpty()) {
-                    continue;
-                }
-
-                if (slot.hasCapability(CapabilityEnergy.ENERGY, null)) {
-                    flag1 = true;
-                    break;
-                }
-            }
+        if (!list.isEmpty())
+        {
+            flag1 = true;
         }
 
         if (flag1 && !flag)
@@ -167,19 +148,19 @@ public class BlockCartDetectorEnergy extends BlockCartLoaderBase implements IIni
 
     @Override
     public boolean PreInit(FMLPreInitializationEvent event) {
-        this.setUnlocalizedName(event.getModMetadata().modId + "." + "cartdetectorenergy");
-        this.setRegistryName("cartdetectorenergy");
+        this.setUnlocalizedName(event.getModMetadata().modId + "." + "cartdetector");
+        this.setRegistryName("cartdetector");
         ForgeRegistries.BLOCKS.register(this);
 
         itemBlock = new ItemBlock(this);
-        itemBlock.setUnlocalizedName(event.getModMetadata().modId + "." + "cartdetectorenergy");
+        itemBlock.setUnlocalizedName(event.getModMetadata().modId + "." + "cartdetector");
         itemBlock.setRegistryName(this.getRegistryName());
 
         ForgeRegistries.ITEMS.register(itemBlock);
 
         ResourceLocation loc = ForgeRegistries.BLOCKS.getKey(this);
-        //GameRegistry.registerTileEntity(TileEntityCartDetectorEnergy.class, loc.toString());
-        TileEntityCartDetectorEnergy.register(loc.toString(), TileEntityCartDetectorEnergy.class);
+        //GameRegistry.registerTileEntity(TileEntityCartDetector.class, loc.toString());
+        TileEntityCartDetector.register(loc.toString(), TileEntityCartDetector.class);
 
         this.setCreativeTab(RealmsOfAvalonMod.modTab);
         itemBlock.setCreativeTab(RealmsOfAvalonMod.modTab);
