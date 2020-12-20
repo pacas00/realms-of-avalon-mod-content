@@ -11,6 +11,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.item.EntityMinecartChest;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -146,6 +147,31 @@ public class BlockCartDetectorItems extends BlockCartLoaderBase implements IInit
         if (!list.isEmpty() && list.get(0) instanceof EntityMinecartChest) {
             EntityMinecartChest chestCart = (EntityMinecartChest) list.get(0);
             flag1 = !chestCart.isEmpty();
+
+            //Filters
+            if (!chestCart.isEmpty()) {
+                TileEntityCartDetectorItems te = ((TileEntityCartDetectorItems) worldIn.getTileEntity(pos));
+                if (!te.isEmpty()) {
+                    flag1 = false;
+                    IInventory teInventory = te.GetInventory();
+                    for (int i = 0; i < teInventory.getSizeInventory(); i++) {
+                        if (teInventory.getStackInSlot(i).isEmpty()) {
+                            continue;
+                        }
+                        ItemStack filterStack = teInventory.getStackInSlot(i);
+                        for (int j = 0; j < chestCart.getSizeInventory(); j++) {
+                            if (filterStack.getItem() == chestCart.getStackInSlot(j).getItem() && !filterStack.isEmpty()) {
+                                //Match
+                                flag1 = true;
+                                break;
+                            }
+                        }
+                        if (flag1) {
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         if (flag1 && !flag)

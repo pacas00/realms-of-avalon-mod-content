@@ -1,6 +1,7 @@
 package net.petercashel.RealmsOfAvalonMod.TileEntity.Core;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;

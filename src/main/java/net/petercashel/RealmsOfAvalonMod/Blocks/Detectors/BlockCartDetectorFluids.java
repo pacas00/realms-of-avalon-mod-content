@@ -11,6 +11,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.item.EntityMinecartChest;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -23,7 +24,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -31,6 +34,7 @@ import net.petercashel.RealmsOfAvalonMod.Blocks.Core.BlockCartLoaderBase;
 import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
 import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonMod;
 import net.petercashel.RealmsOfAvalonMod.TileEntity.Detectors.TileEntityCartDetectorFluids;
+import net.petercashel.RealmsOfAvalonMod.TileEntity.Detectors.TileEntityCartDetectorItems;
 
 import java.util.List;
 
@@ -148,6 +152,9 @@ public class BlockCartDetectorFluids extends BlockCartLoaderBase implements IIni
             EntityMinecartChest chestCart = (EntityMinecartChest) list.get(0);
             //flag1 = !chestCart.isEmpty();
 
+            TileEntityCartDetectorFluids te = ((TileEntityCartDetectorFluids) worldIn.getTileEntity(pos));
+            IInventory teInventory = te.GetInventory();
+
             int slots = chestCart.getSizeInventory();
             for (int i = 0; i < slots; i++) {
                 ItemStack slot = chestCart.getStackInSlot(i);
@@ -160,7 +167,33 @@ public class BlockCartDetectorFluids extends BlockCartLoaderBase implements IIni
 
                 if (slot.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
                     flag1 = true;
-                    break;
+                    //Filters
+                    if (!teInventory.isEmpty()) {
+                        //Filter
+                        flag1 = false;
+
+                        for (int j = 0; j < teInventory.getSizeInventory(); j++) {
+                            if (teInventory.getStackInSlot(j) == null || teInventory.getStackInSlot(j).isEmpty()) {
+                                continue;
+                            }
+                            ItemStack filterStack = teInventory.getStackInSlot(j);
+                            if (!filterStack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
+                                continue;
+                            }
+
+                            IFluidHandlerItem filterStackFluid = filterStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+                            IFluidHandlerItem slotStackFluid = slot.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+
+                            if (filterStackFluid.getTankProperties()[0].getContents().isFluidEqual(slotStackFluid.getTankProperties()[0].getContents())) {
+                                flag1 = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (flag1) {
+                        break;
+                    }
                 }
             }
         }

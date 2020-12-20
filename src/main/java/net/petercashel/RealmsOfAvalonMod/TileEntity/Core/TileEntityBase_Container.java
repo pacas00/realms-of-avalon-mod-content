@@ -42,7 +42,7 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
      */
     public int getSizeInventory()
     {
-        return InventorySize;
+        return stacks.size();
     }
 
     protected NonNullList<ItemStack> getItems()
@@ -91,7 +91,13 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
      */
     public ItemStack getStackInSlot(int index)
     {
-        return (ItemStack)this.getItems().get(index);
+        try {
+            return (ItemStack)this.getItems().get(index);
+        } catch (Exception ex) {
+            //Welp, that's back
+            System.out.println(ex);
+            return null;
+        }
     }
 
     @Override
@@ -274,10 +280,25 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
     {
         super.readFromNBT(compound);
 
-        this.InventorySize = compound.getInteger("InventorySize");
-        this.stacks = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
+        int constSize = InventorySize;
+
+        if (compound.getInteger("InventorySize") != 0) {
+            this.InventorySize = compound.getInteger("InventorySize");
+        }
+        this.stacks = NonNullList.<ItemStack>withSize(this.InventorySize, ItemStack.EMPTY);
 
         ItemStackHelper.loadAllItems(compound, this.stacks);
+
+        if (constSize != InventorySize) {
+            NonNullList<ItemStack> newStacks = NonNullList.<ItemStack>withSize(constSize, ItemStack.EMPTY);
+            for (int i = 0; i < InventorySize; i++) {
+                if (i < constSize) {
+                    newStacks.set(i, stacks.get(i));
+                }
+            }
+            stacks = newStacks;
+            InventorySize = constSize;
+        }
 
         AllowExtraction = compound.getBoolean("AllowExtraction");
         AllowInsert = compound.getBoolean("AllowInsert");
@@ -442,5 +463,10 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
     public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)
     {
         return new ContainerDispenser(playerInventory, this);
+    }
+
+
+    public IInventory GetInventory() {
+        return (IInventory) this;
     }
 }

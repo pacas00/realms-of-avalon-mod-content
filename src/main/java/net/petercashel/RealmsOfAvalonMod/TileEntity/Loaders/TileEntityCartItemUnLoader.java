@@ -6,7 +6,7 @@ import net.petercashel.RealmsOfAvalonMod.TileEntity.Core.TileEntityBase_Containe
 
 public class TileEntityCartItemUnLoader extends TileEntityBase_Container {
     public TileEntityCartItemUnLoader() {
-        super(9, true, false);
+        super(27, true, false);
     }
 
     @Override
