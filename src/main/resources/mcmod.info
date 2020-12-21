@@ -2,15 +2,15 @@
 {
   "modid": "realmsofavalonmod",
   "name": "Realms of Avalon Mod",
-  "description": "Example placeholder mod.",
+  "description": "Custom content for the Realms of Avalon modpack.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
-  "logoFile": "",
+  "authorList": ["PeterCashel"],
+  "credits": "PeterCashel, For making this mod. The Forge and FML guys, for making Forge which this relies on. Team COFH for Thermal Expansion and related projects which great reference in understanding energy.",
+  "logoFile": "logo.png",
   "screenshots": [],
-  "dependencies": []
+  "dependencies": ["forge,cofhcore,redstoneflux,thermalfoundation","thermalexpansion"]
 }
 ]

@@ -20,9 +20,6 @@ public class ClientProxy implements IProxy
     @Override
     public void preInit(FMLPreInitializationEvent event)
     {
-        // DEBUG
-        System.out.println("on Client side");
-
         //Minecraft.getMinecraft().mouseHelper = ClientProxy.mouseHelperAI;
         //RenderFactories.registerEntityRenderers();
 
@@ -33,9 +30,6 @@ public class ClientProxy implements IProxy
     @Override
     public void init(FMLInitializationEvent event)
     {
-        // DEBUG
-        System.out.println("on Client side");
-
         // register key bindings
         //ModKeyBindings.registerKeyBindings();
     }
@@ -43,8 +37,7 @@ public class ClientProxy implements IProxy
     @Override
     public void postInit(FMLPostInitializationEvent event)
     {
-        // DEBUG
-        System.out.println("on Client side");
+
     }
 
     @Override
