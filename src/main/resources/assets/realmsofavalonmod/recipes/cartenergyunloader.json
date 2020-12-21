@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CR ",
+    "RD ",
+    "  H"
+  ],
+  "key": {
+    "D": {
+      "item": "realmsofavalonmod:cartdetectorenergy",
+      "data": 0
+    },
+    "C":
+    {
+      "item": "thermalfoundation:material",
+      "data": 515
+    },
+    "R":
+    {
+      "item": "thermalfoundation:material",
+      "data": 514
+    },
+    "H":
+    {
+      "item": "thermalexpansion:cell",
+      "data": 0
+    }
+  },
+  "result": {
+    "item": "realmsofavalonmod:cartenergyunloader",
+    "data": 0,
+    "count": 1
+  }
+}
