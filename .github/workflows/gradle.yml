@@ -16,10 +16,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Git Version
-      uses: codacy/git-version@2.2.0
-    - name: Environment Printer
-      uses: managedkaos/print-env@v1.0
+    - name: Simple Version
+      uses: xom9ikk/version-by-tag@v1
+    - name: Some other action
+      run: |
+        echo "Tag: ${{ steps.version_by_tag.outputs.tag }}"
+        echo "Semver: ${{ steps.version_by_tag.outputs.semver }}"
+        echo "Version code: ${{ steps.version_by_tag.outputs.versionCode }}"
 
 #     - name: Set up JDK 1.8
 #       uses: actions/setup-java@v1
