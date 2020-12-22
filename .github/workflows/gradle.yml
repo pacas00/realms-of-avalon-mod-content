@@ -16,13 +16,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Simple Version
-      uses: xom9ikk/version-by-tag@v1
-    - name: Some other action
-      run: |
-        echo "Tag: ${{ steps.version_by_tag.outputs.tag }}"
-        echo "Semver: ${{ steps.version_by_tag.outputs.semver }}"
-        echo "Version code: ${{ steps.version_by_tag.outputs.versionCode }}"
+    - name: tag-version
+      uses: juliansangillo/tag-version@v1.5
+      with:  
+        production-branch: main  
+        dev-branch: dev 
+
     - name: Environment Printer
       uses: managedkaos/print-env@v1.0
 
