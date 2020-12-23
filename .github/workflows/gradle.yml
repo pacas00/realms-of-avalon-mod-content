@@ -26,8 +26,6 @@ jobs:
         release_branches: main
     - name: testvar
       run: echo ${newTag}
-    - name: testvar2
-      run: echo ${{newTag}}
     - name: testvar3    
       run: echo ${{ steps.tag_version.outputs.newTag }}
 
