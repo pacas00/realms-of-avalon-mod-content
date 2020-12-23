@@ -18,11 +18,11 @@ jobs:
     - uses: actions/checkout@v2
       with:  
         fetch-depth: 0  
-    - name: Bump version and push tag
-      uses: hennejg/github-tag-action@v4.1.jh1
+    - name: Github Tag with semantic versioning
+      uses: hennejg/github-tag-action@v4.2.4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        release_branch: main
+        release_branches: main
 
 
 #     - name: Set up JDK 1.8
