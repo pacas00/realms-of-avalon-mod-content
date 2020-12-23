@@ -26,9 +26,6 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         release_branches: main
         
-    - name: output changelog
-      run: echo ${{ steps.tag_version.outputs.changelog }} >> ./changelog.txt
-
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
@@ -46,6 +43,11 @@ jobs:
 #         name: Package
 #         path: build/libs
 
+    - name: Create changelogs
+      id: changelogs
+      uses: heineiuo/create-changelogs@v0.2.8
+
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -54,8 +56,8 @@ jobs:
       with:
         tag_name: ${{ steps.tag_version.outputs.new_tag }}
         release_name: Release ${{ steps.tag_version.outputs.new_tag }}
-        #body: ${{ steps.tag_version.outputs.changelog }}
-        body_path: ./changelog.txt
+        body: ${{ steps.changelogs.outputs.changelogs }}
+        #body_path: ./changelog.txt
         draft: false
         prerelease: false
 
