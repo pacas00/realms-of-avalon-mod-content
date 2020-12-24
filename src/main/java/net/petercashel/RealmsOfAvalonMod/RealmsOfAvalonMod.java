@@ -45,6 +45,9 @@ public class RealmsOfAvalonMod
     )
     public static IProxy proxy;
 
+    @Mod.Instance
+    public static RealmsOfAvalonMod instance;
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {

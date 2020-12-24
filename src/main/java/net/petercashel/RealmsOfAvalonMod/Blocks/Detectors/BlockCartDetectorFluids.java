@@ -30,6 +30,8 @@ import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import net.petercashel.RealmsOfAvalonMod.Blocks.Core.BlockCartLoaderBase;
 import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
 import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonMod;
@@ -82,7 +84,8 @@ public class BlockCartDetectorFluids extends BlockCartLoaderBase implements IIni
 
             if (tileentity instanceof TileEntityCartDetectorFluids)
             {
-                playerIn.displayGUIChest((TileEntityCartDetectorFluids)tileentity);
+                //playerIn.displayGUIChest((TileEntityCartDetectorFluids)tileentity);
+                playerIn.openGui(RealmsOfAvalonMod.instance, 1, worldIn, pos.getX(), pos.getY(), pos.getZ());
             }
 
             return true;
@@ -153,7 +156,7 @@ public class BlockCartDetectorFluids extends BlockCartLoaderBase implements IIni
             //flag1 = !chestCart.isEmpty();
 
             TileEntityCartDetectorFluids te = ((TileEntityCartDetectorFluids) worldIn.getTileEntity(pos));
-            IInventory teInventory = te.GetInventory();
+            IItemHandler teInventory = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
             int slots = chestCart.getSizeInventory();
             for (int i = 0; i < slots; i++) {
@@ -168,11 +171,11 @@ public class BlockCartDetectorFluids extends BlockCartLoaderBase implements IIni
                 if (slot.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
                     flag1 = true;
                     //Filters
-                    if (!teInventory.isEmpty()) {
+                    if (!te.isEmpty()) {
                         //Filter
                         flag1 = false;
 
-                        for (int j = 0; j < teInventory.getSizeInventory(); j++) {
+                        for (int j = 0; j < te.getSizeInventory(); j++) {
                             if (teInventory.getStackInSlot(j) == null || teInventory.getStackInSlot(j).isEmpty()) {
                                 continue;
                             }

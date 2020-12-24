@@ -54,7 +54,8 @@ public class BlockCartItemLoader extends BlockCartLoaderBase implements IInitEve
 
             if (tileentity instanceof TileEntityCartItemLoader)
             {
-                playerIn.displayGUIChest((TileEntityCartItemLoader)tileentity);
+                //playerIn.displayGUIChest((TileEntityCartItemLoader)tileentity);
+                playerIn.openGui(RealmsOfAvalonMod.instance, 1, worldIn, pos.getX(), pos.getY(), pos.getZ());
                 //playerIn.sendStatusMessage(new TextComponentString("Stored: " + ((TileEntityCartItemLoader)tileentity).getFluidStored(EnumFacing.SOUTH) + "/" + ((TileEntityCartItemLoader)tileentity).getMaxFluidStored(EnumFacing.SOUTH)), true);
             }
 

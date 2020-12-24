@@ -55,7 +55,8 @@ public class BlockCartItemUnLoader extends BlockCartLoaderBase implements IInitE
 
             if (tileentity instanceof TileEntityCartItemUnLoader)
             {
-                playerIn.displayGUIChest((TileEntityCartItemUnLoader)tileentity);
+                //playerIn.displayGUIChest((TileEntityCartItemUnLoader)tileentity);
+                playerIn.openGui(RealmsOfAvalonMod.instance, 1, worldIn, pos.getX(), pos.getY(), pos.getZ());
                 //playerIn.sendStatusMessage(new TextComponentString("Stored: " + ((TileEntityCartItemUnLoader)tileentity).getFluidStored(EnumFacing.SOUTH) + "/" + ((TileEntityCartItemUnLoader)tileentity).getMaxFluidStored(EnumFacing.SOUTH)), true);
             }
 
