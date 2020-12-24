@@ -28,7 +28,7 @@ public class RealmsOfAvalonMod
 {
     public static final String MODID = "realmsofavalonmod";
     public static final String NAME = "Realms of Avalon Server Content Mod";
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "1.0.2.4";
 
     private static Logger logger;
 
