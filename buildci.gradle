@@ -115,4 +115,3 @@ processResources {
 }
 
 sourceSets { main { output.resourcesDir = "$buildDir/generated-resources-dir/" } }
-//sourceSets { main { output.resourcesDir = output.classesDir } }
