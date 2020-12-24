@@ -40,6 +40,8 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
     /**
      * Returns the number of slots in the inventory.
      */
+
+    @Override
     public int getSizeInventory()
     {
         return stacks.size();
@@ -50,6 +52,7 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
         return this.stacks;
     }
 
+    @Override
     public boolean isEmpty()
     {
         for (ItemStack itemstack : this.stacks)
@@ -89,6 +92,7 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
     /**
      * Returns the stack in the given slot.
      */
+    @Override
     public ItemStack getStackInSlot(int index)
     {
         try {
@@ -240,6 +244,7 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
     /**
      * Removes up to a specified number of items from an inventory slot and returns them in a new stack.
      */
+    @Override
     public ItemStack decrStackSize(int index, int count)
     {
         ItemStack itemstack = ItemStackHelper.getAndSplit(this.getItems(), index, count);
@@ -255,6 +260,7 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
     /**
      * Removes a stack from the given slot and returns it.
      */
+    @Override
     public ItemStack removeStackFromSlot(int index)
     {
         return ItemStackHelper.getAndRemove(this.getItems(), index);
@@ -263,6 +269,7 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
     /**
      * Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections).
      */
+    @Override
     public void setInventorySlotContents(int index, @Nullable ItemStack stack)
     {
         this.getItems().set(index, stack);
@@ -331,6 +338,7 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
     /**
      * Returns the maximum stack size for a inventory slot. Seems to always be 64, possibly will be extended.
      */
+    @Override
     public int getInventoryStackLimit()
     {
         return 64;
@@ -366,6 +374,7 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
      * Returns true if automation is allowed to insert the given stack (ignoring stack size) into the given slot. For
      * guis use Slot.isItemValid
      */
+    @Override
     public boolean isItemValidForSlot(int index, ItemStack stack)
     {
         return true;
