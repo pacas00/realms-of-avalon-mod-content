@@ -1,4 +1,4 @@
-# Realms of Avalon - Additional Content Mod ![GitHub Actions](https://github.com/pacas00/realms-of-avalon-mod-content/workflows/Java%20CI%20with%20Gradle/badge.svg)
+# Realms of Avalon - Additional Content Mod ![Release Builds](https://github.com/pacas00/realms-of-avalon-mod-content/workflows/Release%20Builds/badge.svg?branch=main) ![Dev and PR](https://github.com/pacas00/realms-of-avalon-mod-content/workflows/Dev%20and%20PR/badge.svg?branch=dev)
 
 
 Custom content for the Realms of Avalon modpack.
