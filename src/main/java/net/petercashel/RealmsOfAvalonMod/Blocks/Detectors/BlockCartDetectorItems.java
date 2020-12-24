@@ -27,6 +27,8 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import net.petercashel.RealmsOfAvalonMod.Blocks.Core.BlockCartLoaderBase;
 import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
 import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonMod;
@@ -78,7 +80,8 @@ public class BlockCartDetectorItems extends BlockCartLoaderBase implements IInit
 
             if (tileentity instanceof TileEntityCartDetectorItems)
             {
-                playerIn.displayGUIChest((TileEntityCartDetectorItems)tileentity);
+                //playerIn.displayGUIChest((TileEntityCartDetectorItems)tileentity);
+                playerIn.openGui(RealmsOfAvalonMod.instance, 1, worldIn, pos.getX(), pos.getY(), pos.getZ());
             }
 
             return true;
@@ -153,8 +156,8 @@ public class BlockCartDetectorItems extends BlockCartLoaderBase implements IInit
                 TileEntityCartDetectorItems te = ((TileEntityCartDetectorItems) worldIn.getTileEntity(pos));
                 if (!te.isEmpty()) {
                     flag1 = false;
-                    IInventory teInventory = te.GetInventory();
-                    for (int i = 0; i < teInventory.getSizeInventory(); i++) {
+                    IItemHandler teInventory = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+                    for (int i = 0; i < te.getSizeInventory(); i++) {
                         if (teInventory.getStackInSlot(i).isEmpty()) {
                             continue;
                         }

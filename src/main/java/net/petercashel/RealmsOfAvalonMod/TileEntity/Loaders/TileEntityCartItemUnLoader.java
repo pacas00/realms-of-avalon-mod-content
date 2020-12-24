@@ -1,6 +1,8 @@
 package net.petercashel.RealmsOfAvalonMod.TileEntity.Loaders;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.petercashel.RealmsOfAvalonMod.Blocks.Loaders.BlockCartItemUnLoader;
 import net.petercashel.RealmsOfAvalonMod.TileEntity.Core.TileEntityBase_Container;
 
@@ -31,5 +33,20 @@ public class TileEntityCartItemUnLoader extends TileEntityBase_Container {
     public String getName()
     {
         return this.hasCustomName() ? this.customName : "container.realmsofavalonmod.cartitemunloader";
+    }
+
+    /*
+    This is getting lost some how.
+     */
+    @Override
+    public ItemStack getStackInSlot(int index)
+    {
+        try {
+            return (ItemStack)this.getItems().get(index);
+        } catch (Exception ex) {
+            //Welp, that's back
+            System.out.println(ex);
+            return ItemStack.EMPTY;
+        }
     }
 }

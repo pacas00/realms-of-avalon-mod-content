@@ -3,7 +3,6 @@ package net.petercashel.RealmsOfAvalonMod.TileEntity.Core;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ContainerDispenser;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
@@ -17,11 +16,12 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.petercashel.RealmsOfAvalonMod.Container.ContainerBasic;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityBase_Container extends TileEntityBase_Directional implements IItemHandlerModifiable, IInventory {
+public class TileEntityBase_Container extends TileEntityBase_Directional implements IItemHandlerModifiable {
 
     public TileEntityBase_Container(int InventorySize, boolean AllowExtraction, boolean AllowInsert) {
         super();
@@ -40,6 +40,7 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
     /**
      * Returns the number of slots in the inventory.
      */
+
     public int getSizeInventory()
     {
         return stacks.size();
@@ -89,6 +90,7 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
     /**
      * Returns the stack in the given slot.
      */
+    @Override
     public ItemStack getStackInSlot(int index)
     {
         try {
@@ -336,7 +338,6 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
         return 64;
     }
 
-    @Override
     /**
      * Don't rename this method to canInteractWith due to conflicts with Container
      */
@@ -352,12 +353,10 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
         }
     }
 
-    @Override
     public void openInventory(EntityPlayer player) {
 
     }
 
-    @Override
     public void closeInventory(EntityPlayer player) {
 
     }
@@ -371,22 +370,18 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
         return true;
     }
 
-    @Override
     public int getField(int id) {
         return 0;
     }
 
-    @Override
     public void setField(int id, int value) {
 
     }
 
-    @Override
     public int getFieldCount() {
         return 0;
     }
 
-    @Override
     public void clear() {
        //this.getItems().clear();
     }
@@ -399,7 +394,10 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
 
     @Override
     public <T> T getCapability(Capability<T> capability, final EnumFacing from) {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && Facing != null && Facing == from.getOpposite()) {
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && Facing != null && from != null && Facing == from.getOpposite()) {
+            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(this);
+        }
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && from == null) {
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(this);
         }
         return super.getCapability(capability, from);
@@ -424,7 +422,6 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
         return -1;
     }
 
-    @Override
     /**
      * Get the name of this object. For players this returns their username
      */
@@ -433,7 +430,6 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
         return this.hasCustomName() ? this.customName : "container.dispenser";
     }
 
-    @Override
     /**
      * Returns true if this thing is named
      */
@@ -462,11 +458,11 @@ public class TileEntityBase_Container extends TileEntityBase_Directional impleme
 
     public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)
     {
-        return new ContainerDispenser(playerInventory, this);
+        return new ContainerBasic(playerInventory, this);
     }
 
-
-    public IInventory GetInventory() {
-        return (IInventory) this;
+    public boolean canInteractWith(EntityPlayer playerIn) {
+        // If we are too far away from this tile entity you cannot use it
+        return !isInvalid() && playerIn.getDistanceSq(pos.add(0.5D, 0.5D, 0.5D)) <= 64D;
     }
 }

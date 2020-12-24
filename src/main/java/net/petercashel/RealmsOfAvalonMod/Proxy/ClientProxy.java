@@ -7,6 +7,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.petercashel.RealmsOfAvalonMod.Init.BlockInit;
 import net.petercashel.RealmsOfAvalonMod.Init.ItemInit;
@@ -32,6 +33,8 @@ public class ClientProxy implements IProxy
     {
         // register key bindings
         //ModKeyBindings.registerKeyBindings();
+
+        NetworkRegistry.INSTANCE.registerGuiHandler(RealmsOfAvalonMod.instance, new GuiProxy_ContainerBasic());
     }
 
     @Override
