@@ -90,7 +90,7 @@ public class EntityPlumYeti extends EntityMob {
 //                ((EntityLivingBase)entityIn).addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 200));
 
                 //UP YOU GO!
-                ((EntityLivingBase)entityIn).addVelocity(0, 0.85, 0);
+                ((EntityLivingBase)entityIn).addVelocity(0, 1, 0);
             }
             return true;
         } else {
