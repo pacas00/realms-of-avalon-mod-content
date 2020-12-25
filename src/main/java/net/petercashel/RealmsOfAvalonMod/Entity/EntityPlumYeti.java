@@ -49,7 +49,7 @@ public class EntityPlumYeti extends EntityMob {
         // Here we set various attributes for our mob. Like maximum health, armor, speed, ...
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(55.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.20D);
-        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(0.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(0.1D);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0D);
     }
 
@@ -84,14 +84,8 @@ public class EntityPlumYeti extends EntityMob {
     @Override
     public boolean attackEntityAsMob(Entity entityIn) {
         if (super.attackEntityAsMob(entityIn)) {
-            if (entityIn instanceof EntityLivingBase) {
-//                // This zombie gives health boost and regeneration when it attacks
-//                ((EntityLivingBase)entityIn).addPotionEffect(new PotionEffect(MobEffects.HEALTH_BOOST, 200));
-//                ((EntityLivingBase)entityIn).addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 200));
-
-                //UP YOU GO!
-                ((EntityLivingBase)entityIn).addVelocity(0, 1, 0);
-            }
+            //
+            entityIn.setVelocity(entityIn.motionX, entityIn.motionY + 0.75, entityIn.motionZ);
             return true;
         } else {
             return false;

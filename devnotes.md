@@ -6,6 +6,17 @@ https://github.com/hennejg/github-tag-action
 Follow these conventions for auto version bumping
 https://github.com/semantic-release/semantic-release
 
+Default bump is patch (0.0.x)
+
+Minor/Feature (0.x.0) is triggered by these examples
+
+feat: This feature was green
+
+
+Major/Breaking changes (x.0.0) is triggered by these examples
+
+perf: Performance improvements also are breaking
+BREAKING CHANGE: This change breaks something
 
 
 Workflow trigger info
