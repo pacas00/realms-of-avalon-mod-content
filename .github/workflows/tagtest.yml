@@ -1,0 +1,22 @@
+name: tagtest
+
+on:
+  push:
+    branches: [ dev ]
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:  
+        fetch-depth: 0  
+    
+    - name: Github Tag with semantic versioning
+      id: tag_version
+      uses: hennejg/github-tag-action@v4.2.4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        release_branches: main
+        dry_run: "true"
