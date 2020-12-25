@@ -3,12 +3,15 @@ package net.petercashel.RealmsOfAvalonMod.Proxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.petercashel.RealmsOfAvalonMod.Entity.EntityPlumYeti;
+import net.petercashel.RealmsOfAvalonMod.Entity.Render.RenderPlumYeti;
 import net.petercashel.RealmsOfAvalonMod.Init.BlockInit;
 import net.petercashel.RealmsOfAvalonMod.Init.ItemInit;
 import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonMod;
@@ -26,6 +29,10 @@ public class ClientProxy implements IProxy
 
         BlockInit.RegisterRendering(event);
         ItemInit.RegisterRendering(event);
+
+
+
+        RenderingRegistry.registerEntityRenderingHandler(EntityPlumYeti.class, RenderPlumYeti.FACTORY);
     }
 
     @Override
