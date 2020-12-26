@@ -24,6 +24,8 @@ jobs:
     - name: Auto Changelog
       id: changelog
       uses: ardalanamini/auto-changelog@v1.1.0
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: echo changelog
       run: echo ${{ steps.changelog.outputs.changelog }}
