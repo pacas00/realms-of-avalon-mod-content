@@ -26,7 +26,7 @@ jobs:
       id: changelog
       uses: Helmisek/conventional-changelog-generator@v1.0.4
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
         commit-types: "fix:Bug Fixes,feat:Features,refactor:Refactoring,break:BREAKING CHANGE,BREAKING CHANGE:BREAKING CHANGE"
 
 
