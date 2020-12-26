@@ -8,6 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -20,11 +21,14 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.petercashel.RealmsOfAvalonMod.Blocks.Detectors.BlockCartDetector;
 import net.petercashel.RealmsOfAvalonMod.Entity.EntityPlumYeti;
 import net.petercashel.RealmsOfAvalonMod.Init.BlockInit;
+import net.petercashel.RealmsOfAvalonMod.Init.EntityInit;
 import net.petercashel.RealmsOfAvalonMod.Init.ItemInit;
+import net.petercashel.RealmsOfAvalonMod.Init.SoundEventsInit;
 import net.petercashel.RealmsOfAvalonMod.Proxy.IProxy;
 import org.apache.logging.log4j.Logger;
 
@@ -61,21 +65,10 @@ public class RealmsOfAvalonMod
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(RealmsOfAvalonEventHandler.class);
 
+        SoundEventsInit.INSTANCE.PreInit(event);
         BlockInit.PreInit(event);
         ItemInit.PreInit(event);
-
-
-        // Every entity in our mod has an ID (local to this mod)
-        int id = 1;
-
-        EntityRegistry.registerModEntity(new ResourceLocation(RealmsOfAvalonMod.MODID, "plumyeti"), EntityPlumYeti.class, "plumyeti", id++, RealmsOfAvalonMod.instance, 64, 3, true, 0xE9EDF0, 0x7C5A9B);
-
-        // We want our mob to spawn in Plains and ice plains biomes. If you don't add this then it will not spawn automatically
-        // but you can of course still make it spawn manually
-        EntityRegistry.addSpawn(EntityPlumYeti.class, 100, 3, 5, EnumCreatureType.MONSTER, Biomes.ICE_MOUNTAINS, Biomes.ICE_PLAINS);
-
-        // This is the loot table for our mob
-        LootTableList.register(EntityPlumYeti.LOOT);
+        EntityInit.INSTANCE.PreInit(event);
 
         proxy.preInit(event);
     }
@@ -83,8 +76,10 @@ public class RealmsOfAvalonMod
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
+        SoundEventsInit.INSTANCE.Initialize(event);
         BlockInit.Init(event);
         ItemInit.Init(event);
+        EntityInit.INSTANCE.Initialize(event);
 
         proxy.init(event);
     }

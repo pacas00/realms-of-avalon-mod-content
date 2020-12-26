@@ -1,0 +1,11 @@
+{
+  "record_dodgems": {
+    "category": "record",
+    "sounds": [
+      {
+        "name": "realmsofavalonmod:music/dodgems_placeholder",
+        "stream": true
+      }
+    ]
+  }
+}
