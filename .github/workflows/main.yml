@@ -26,6 +26,15 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         release_branches: main
 
+    - name: Dev Merge
+      uses: robotology/gh-action-nightly-merge@v1.3.1
+      with:
+        stable_branch: 'main'
+        development_branch: 'dev'
+        user_name: GitHub Release Merge Action
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
     - name: Replace Action
       uses: datamonsters/replace-action@v2
       with:
