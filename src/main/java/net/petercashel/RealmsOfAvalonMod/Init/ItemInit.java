@@ -1,9 +1,16 @@
 package net.petercashel.RealmsOfAvalonMod.Init;
 
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemRecord;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.petercashel.RealmsOfAvalonMod.Blocks.Items.ItemRecordExt;
 import net.petercashel.RealmsOfAvalonMod.Interfaces.IInitEvents;
+import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonMod;
 
 import java.util.ArrayList;
 
@@ -13,16 +20,15 @@ public class ItemInit {
 
     public static void PreInit(FMLPreInitializationEvent event) {
 
-       // blockCartDetector = new BlockCartDetector();
-
-
-        //initList.add(blockCartDetector);
-
-
         for (IInitEvents init : initList) {
             init.PreInit(event);
         }
         MinecraftForge.EVENT_BUS.register(INSTANCE);
+
+
+        //Records need manual registration
+        itemRecordDodgems = new ItemRecordExt("dodgems", SoundEventsInit.dodgemsMusic).setUnlocalizedName("record").setRegistryName("record_dodgems");
+        ForgeRegistries.ITEMS.register(itemRecordDodgems);
     }
 
     public static void Init(FMLInitializationEvent event) {
@@ -35,11 +41,15 @@ public class ItemInit {
         for (IInitEvents init : initList) {
             init.RegisterRendering(event);
         }
+
+        //Records need manual registration
+        ModelLoader.setCustomModelResourceLocation(itemRecordDodgems, 0, new ModelResourceLocation(itemRecordDodgems.getRegistryName(), "inventory"));
     }
 
     private static ArrayList<IInitEvents> initList = new ArrayList<>();
 
 
     /* REFERENCES */
-    //public static BlockCartDetector blockCartDetector;
+    public static Item itemRecordDodgems;
 }
+

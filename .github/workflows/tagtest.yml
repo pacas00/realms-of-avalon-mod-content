@@ -3,7 +3,8 @@ name: tagtest
 on:
   push:
     branches: [ dev ]
-    
+
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,6 +13,13 @@ jobs:
     - uses: actions/checkout@v2
       with:  
         fetch-depth: 0  
+            
+    - name: Generate Changelog
+      id: changelog
+      uses: Helmisek/conventional-changelog-generator@v1.0.4
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        commit-types: "fix:Bug Fixes,feat:Features,refactor:Refactoring,break:BREAKING CHANGE,BREAKING CHANGE:BREAKING CHANGE"
     
     - name: Github Tag with semantic versioning
       id: tag_version
@@ -20,3 +28,8 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         release_branches: main
         dry_run: "true"
+
+
+    - name: echo changelog
+      run: echo "${{ steps.changelog.outputs.changelog }}"
+
