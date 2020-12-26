@@ -19,13 +19,23 @@ jobs:
       with:  
         fetch-depth: 0  
     
+    - name: Generate Changelog
+      id: changelog
+      uses: Helmisek/conventional-changelog-generator@v1.0.4
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        commit-types: "fix:Bug Fixes,feat:Features,refactor:Refactoring,break:BREAKING CHANGE,BREAKING CHANGE:BREAKING CHANGE"
+            
+    - name: echo changelog
+      run: echo "${{ steps.changelog.outputs.changelog }}"
+    
     - name: Github Tag with semantic versioning
       id: tag_version
       uses: hennejg/github-tag-action@v4.2.4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         release_branches: main
-
+        
     - name: Dev Merge
       uses: robotology/gh-action-nightly-merge@v1.3.1
       with:
@@ -58,11 +68,6 @@ jobs:
 #         name: Package
 #         path: build/libs
 
-    - name: Create changelogs
-      id: changelogs
-      uses: heineiuo/create-changelogs@v0.2.8
-
-
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -71,7 +76,7 @@ jobs:
       with:
         tag_name: ${{ steps.tag_version.outputs.new_tag }}
         release_name: Release ${{ steps.tag_version.outputs.new_tag }}
-        body: ${{ steps.changelogs.outputs.changelogs }}
+        body: ${{ steps.changelog.outputs.changelog }}
         #body_path: ./changelog.txt
         draft: false
         prerelease: false
