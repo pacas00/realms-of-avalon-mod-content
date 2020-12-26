@@ -28,8 +28,6 @@ jobs:
       with:
         REPO_NAME: 'pacas00/realms-of-avalon-mod-content'
         ACCESS_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        PATH: '/CHANGELOG.md'
-        COMMIT_MESSAGE: 'docs(CHANGELOG): update release notes'
 
     - name: echo changelog
       run: echo ${{ steps.changelog.outputs.changelog }}
