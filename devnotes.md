@@ -4,6 +4,7 @@ Tagging
 https://github.com/hennejg/github-tag-action
 
 Follow these conventions for auto version bumping
+PREFERED: https://www.conventionalcommits.org/en/v1.0.0/
 https://github.com/semantic-release/semantic-release
 
 Default bump is patch (0.0.x)

@@ -1,13 +1,20 @@
 buildscript {
     repositories {
         jcenter()
+        maven {
+            url = "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            url "https://www.cursemaven.com"
+        }
         maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT',"com.wynprice.cursemaven:CurseMaven:1.2.3"
     }
 }
 apply plugin: 'java'
+apply plugin: "com.wynprice.cursemaven"
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'maven'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
@@ -33,6 +40,8 @@ configFile.withReader {
 	project.ext.config = new ConfigSlurper().parse prop
 }
 
+def configStoreFile = file "/RAID/keystore.properties"
+
 repositories {
 	maven {
 		name = "CoFH Maven"
@@ -46,6 +55,9 @@ repositories {
 		name = "JEI Maven"
 		url = "https://dvs1.progwml6.com/files/maven"
 	}
+    maven {
+        url "https://www.cursemaven.com"
+    }
 }
 
 minecraft {
@@ -93,6 +105,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
+
 }
 
 processResources {
@@ -115,3 +128,25 @@ processResources {
 }
 
 sourceSets { main { output.resourcesDir = "$buildDir/generated-resources-dir/" } }
+
+task signJar(type: SignJar, dependsOn: reobfJar) {
+//    onlyIf {
+//        configStoreFile.exists()
+//    }
+
+    configStoreFile.withReader {
+        // Load config. It shall from now be referenced as simply config or project.config
+        def prop = new Properties()
+        prop.load(it)
+        keyStore = prop.getProperty("keyStore")
+        alias = prop.getProperty("alias")
+        storePass = prop.getProperty("storePass")
+        keyPass = prop.getProperty("keyPass")
+
+    }
+
+    inputFile = jar.archivePath
+    outputFile = jar.archivePath
+}
+
+build.dependsOn signJar

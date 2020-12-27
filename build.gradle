@@ -1,13 +1,20 @@
 buildscript {
     repositories {
         jcenter()
+        maven {
+            url = "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            url "https://www.cursemaven.com"
+        }
         maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT',"com.wynprice.cursemaven:CurseMaven:1.2.3"
     }
 }
 apply plugin: 'java'
+apply plugin: "com.wynprice.cursemaven"
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'maven'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
@@ -45,6 +52,9 @@ repositories {
 		name = "JEI Maven"
 		url = "https://dvs1.progwml6.com/files/maven"
 	}
+    maven {
+        url "https://www.cursemaven.com"
+    }
 }
 
 minecraft {
@@ -91,6 +101,21 @@ dependencies {
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
+
+
+    //CurseMaven 2.x+ syntax
+    //deobfCompile "curse.maven:obfuscate:2912288"
+    //deobfCompile "curse.maven:mrcrayfishs-vehicle-mod:2967287"
+
+    //CurseMaven 1.x syntax
+    //deobfCompile curse.resolve("obfuscate", 2912288)
+    //deobfCompile curse.resolve("mrcrayfishs-vehicle-mod", 2967287)
+
+    //https://www.curseforge.com/minecraft/mc-mods/worldedit/files/2460570
+    deobfCompile curse.resolve("worldedit", 2460570)
+
+    //deobfCompile curse.resolveID("267602", "2642375")
+
 
 }
 
