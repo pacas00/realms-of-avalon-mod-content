@@ -11,6 +11,6 @@
   "credits": "PeterCashel, For making this mod. The Forge and FML guys, for making Forge which this relies on. Team COFH for Thermal Expansion and related projects which great reference in understanding energy.",
   "logoFile": "logo.png",
   "screenshots": [],
-  "dependencies": ["forge,cofhcore,redstoneflux,thermalfoundation","thermalexpansion"]
+  "dependencies": ["forge,cofhcore,redstoneflux,thermalfoundation,thermalexpansion"]
 }
 ]

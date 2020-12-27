@@ -1,4 +1,4 @@
-package net.petercashel.RealmsOfAvalonMod.Blocks.Items;
+package net.petercashel.RealmsOfAvalonMod.Items;
 
 import net.minecraft.item.ItemRecord;
 import net.minecraft.util.SoundEvent;
