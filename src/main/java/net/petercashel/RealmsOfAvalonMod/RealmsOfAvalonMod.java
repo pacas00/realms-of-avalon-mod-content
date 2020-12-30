@@ -139,8 +139,7 @@ public class RealmsOfAvalonMod
         return false;
     }
 
-    @SubscribeEvent
-    @EventHandler
+    @Mod.EventHandler
     public static void onFingerPrintViolation(FMLFingerprintViolationEvent event)
     {
         /*
