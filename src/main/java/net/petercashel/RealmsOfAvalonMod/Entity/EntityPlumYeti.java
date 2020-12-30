@@ -7,6 +7,7 @@ import net.minecraft.entity.ai.*;
 import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityPigZombie;
+import net.minecraft.entity.monster.EntitySnowman;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
@@ -79,6 +80,7 @@ public class EntityPlumYeti extends EntityMob {
         this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
         this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityVillager.class, false));
         this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityIronGolem.class, true));
+        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySnowman.class, true));
     }
 
     @Override
@@ -86,14 +88,9 @@ public class EntityPlumYeti extends EntityMob {
         if (super.attackEntityAsMob(entityIn)) {
             //
             try {
-                entityIn.setVelocity(entityIn.motionX, entityIn.motionY + 0.75, entityIn.motionZ);
-            } catch (Exception exception) {
-                System.out.println(exception);
-                try {
-                    entityIn.addVelocity(0, 0.75, 0);
-                } catch (Exception exception2) {
-                    System.out.println(exception2);
-                }
+                entityIn.addVelocity(0, 0.75, 0);
+            } catch (java.lang.NoSuchMethodError nsme) {
+                System.out.println(nsme);
             }
 
             return true;
