@@ -84,8 +84,6 @@ public class EntityPlumYeti extends EntityMob {
     @Override
     public boolean attackEntityAsMob(Entity entityIn) {
         if (super.attackEntityAsMob(entityIn)) {
-            //
-            entityIn.setVelocity(entityIn.motionX, entityIn.motionY + 0.75, entityIn.motionZ);
             return true;
         } else {
             return false;
