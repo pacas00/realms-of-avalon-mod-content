@@ -116,15 +116,14 @@ public class RealmsOfAvalonMod
     public static BlockCartDetector blockCartDetector = new BlockCartDetector();
     public static Item blockCartDetectorItem = new ItemBlock(blockCartDetector);
 
-    @SubscribeEvent
     @EventHandler
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         IForgeRegistry registry = event.getRegistry();
         logger.info("Registering Blocks");
         //event.getRegistry().register(blockCartDetector);
+
     }
 
-    @SubscribeEvent
     @EventHandler
     public static void registerItems(RegistryEvent.Register<Item> event) {
         IForgeRegistry registry = event.getRegistry();
@@ -139,8 +138,7 @@ public class RealmsOfAvalonMod
         return false;
     }
 
-    @SubscribeEvent
-    @EventHandler
+    @Mod.EventHandler
     public static void onFingerPrintViolation(FMLFingerprintViolationEvent event)
     {
         /*
