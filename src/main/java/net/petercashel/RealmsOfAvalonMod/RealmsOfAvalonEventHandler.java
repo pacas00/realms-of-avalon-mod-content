@@ -10,6 +10,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.event.entity.minecart.MinecartEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -17,6 +18,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.petercashel.RealmsOfAvalonMod.GUI.Servers.GuiMultiplayerPack;
+import net.petercashel.RealmsOfAvalonMod.GUI.Splash.GuiSplashScreenPack;
+
+import java.io.File;
 
 public class RealmsOfAvalonEventHandler {
 
@@ -52,15 +56,11 @@ public class RealmsOfAvalonEventHandler {
     }
 
 
+    private static boolean launchedSplashScreen = false;
 
-    @SubscribeEvent(priority = EventPriority.LOW)
     @SideOnly(Side.CLIENT)
-    public static void openGui(GuiOpenEvent event) {
-        if (event.getGui() instanceof GuiMainMenu) {
-            GuiMainMenu mm = (GuiMainMenu) event.getGui();
-
-        }
-
+    private static boolean hasROAServerConfig() {
+        return new File(new File(Minecraft.getMinecraft().mcDataDir, "config"), "RealmsOfAvalonServers.nbt").exists();
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -68,7 +68,13 @@ public class RealmsOfAvalonEventHandler {
     public static void onScreenEvent(GuiScreenEvent.InitGuiEvent event) {
         if (event.getGui() instanceof GuiMainMenu) {
             GuiMainMenu mm = (GuiMainMenu) event.getGui();
+            String name = event.getGui().getClass().getSimpleName();
+            if (launchedSplashScreen == false && name.equals("GuiFakeMain") && hasROAServerConfig()) {
+                launchedSplashScreen = true;
 
+                GuiSplashScreenPack pack = new GuiSplashScreenPack(event.getGui());
+                Minecraft.getMinecraft().displayGuiScreen((GuiScreen)pack);
+            }
         }
 
     }
@@ -77,11 +83,11 @@ public class RealmsOfAvalonEventHandler {
     @SideOnly(Side.CLIENT)
     public static void onAPEvent(GuiScreenEvent.ActionPerformedEvent.Post event) {
         GuiButton b = event.getButton();
-        if (b.displayString.equals("Pack Official Servers") && b.id >= 6000) //Hopefully, Custom main menu button.
+        if (b.displayString.equals("Pack Official Servers") && b.id >= 6000 && hasROAServerConfig()) //Hopefully, Custom main menu button.
         {
             GuiMultiplayerPack pack = new GuiMultiplayerPack(event.getGui());
             Minecraft.getMinecraft().displayGuiScreen((GuiScreen)pack);
-        } else if (b.displayString.endsWith("Official Servers") && b.id >= 6000) //Hopefully, Custom main menu button.
+        } else if (b.displayString.endsWith("Official Servers") && b.id >= 6000 && hasROAServerConfig()) //Hopefully, Custom main menu button.
         {
             GuiMultiplayerPack pack = new GuiMultiplayerPack(event.getGui());
             Minecraft.getMinecraft().displayGuiScreen((GuiScreen)pack);
