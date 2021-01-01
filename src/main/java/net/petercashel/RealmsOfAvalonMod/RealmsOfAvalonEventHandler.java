@@ -77,7 +77,11 @@ public class RealmsOfAvalonEventHandler {
     @SideOnly(Side.CLIENT)
     public static void onAPEvent(GuiScreenEvent.ActionPerformedEvent.Post event) {
         GuiButton b = event.getButton();
-        if (b.displayString.equals("Official Servers") && b.id >= 6000) //Hopefully, Custom main menu button.
+        if (b.displayString.equals("Pack Official Servers") && b.id >= 6000) //Hopefully, Custom main menu button.
+        {
+            GuiMultiplayerPack pack = new GuiMultiplayerPack(event.getGui());
+            Minecraft.getMinecraft().displayGuiScreen((GuiScreen)pack);
+        } else if (b.displayString.endsWith("Official Servers") && b.id >= 6000) //Hopefully, Custom main menu button.
         {
             GuiMultiplayerPack pack = new GuiMultiplayerPack(event.getGui());
             Minecraft.getMinecraft().displayGuiScreen((GuiScreen)pack);
