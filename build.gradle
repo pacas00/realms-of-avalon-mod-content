@@ -114,6 +114,8 @@ dependencies {
     //https://www.curseforge.com/minecraft/mc-mods/worldedit/files/2460570
     deobfCompile curse.resolve("worldedit", 2460570)
 
+    deobfCompile curse.resolve(226406, 2857869)
+
     //deobfCompile curse.resolveID("267602", "2642375")
 
 
