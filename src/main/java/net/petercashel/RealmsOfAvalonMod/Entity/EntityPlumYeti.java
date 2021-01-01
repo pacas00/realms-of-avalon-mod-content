@@ -66,8 +66,8 @@ public class EntityPlumYeti extends EntityMob {
     @Override
     protected void initEntityAI() {
         this.tasks.addTask(0, new EntityAISwimming(this));
-        this.tasks.addTask(2, new EntityAIPlumYetiAttack(this, 2.0D, false));
-        this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
+        this.tasks.addTask(2, new EntityAIPlumYetiAttack(this, 2.25D, false));
+        this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.5D));
         this.tasks.addTask(7, new EntityAIWander(this, 1.0D));
         this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(8, new EntityAILookIdle(this));
