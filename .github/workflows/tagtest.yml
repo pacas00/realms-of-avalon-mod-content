@@ -19,7 +19,7 @@ jobs:
       uses: Helmisek/conventional-changelog-generator@v1.0.4
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        commit-types: "fix:Bug Fixes,feat:Features,refactor:Refactoring,break:BREAKING CHANGE,BREAKING CHANGE:BREAKING CHANGE"
+        commit-types: "fix:Bug Fixes,feat:Features,refactor:Refactoring,change:Changes,build:Build Process,ci:Build Process,break:BREAKING CHANGE,BREAKING CHANGE:BREAKING CHANGE"
     
     - name: Github Tag with semantic versioning
       id: tag_version
