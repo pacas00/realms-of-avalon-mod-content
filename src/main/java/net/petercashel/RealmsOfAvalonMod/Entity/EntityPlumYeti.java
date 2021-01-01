@@ -48,7 +48,7 @@ public class EntityPlumYeti extends EntityMob {
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         // Here we set various attributes for our mob. Like maximum health, armor, speed, ...
-        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(55.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.20D);
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1D);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0D);
@@ -66,7 +66,7 @@ public class EntityPlumYeti extends EntityMob {
     @Override
     protected void initEntityAI() {
         this.tasks.addTask(0, new EntityAISwimming(this));
-        this.tasks.addTask(2, new EntityAIPlumYetiAttack(this, 1.0D, false));
+        this.tasks.addTask(2, new EntityAIPlumYetiAttack(this, 2.0D, false));
         this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
         this.tasks.addTask(7, new EntityAIWander(this, 1.0D));
         this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
