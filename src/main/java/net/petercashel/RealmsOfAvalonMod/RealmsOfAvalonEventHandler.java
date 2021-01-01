@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityMinecartChest;
 import net.minecraft.util.EnumActionResult;
@@ -65,7 +66,7 @@ public class RealmsOfAvalonEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     @SideOnly(Side.CLIENT)
-    public static void onScreenEvent(GuiScreenEvent.InitGuiEvent event) {
+    public static void onInitGuiEvent(GuiScreenEvent.InitGuiEvent event) {
         if (event.getGui() instanceof GuiMainMenu) {
             GuiMainMenu mm = (GuiMainMenu) event.getGui();
             String name = event.getGui().getClass().getSimpleName();
@@ -76,18 +77,25 @@ public class RealmsOfAvalonEventHandler {
                 Minecraft.getMinecraft().displayGuiScreen((GuiScreen)pack);
             }
         }
+    }
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SideOnly(Side.CLIENT)
+    public static void onInitGuiPostEvent(GuiScreenEvent.InitGuiEvent.Post event) {
+        if (event.getGui() instanceof GuiMainMenu) {
+            GuiMainMenu mm = (GuiMainMenu) event.getGui();
+            String name = event.getGui().getClass().getSimpleName();
+            if (name.equals("GuiFakeMain") && hasROAServerConfig()) { //By ensureing CMM is loaded, the button is automatically hidden.
+                event.getButtonList().add(new GuiButton(7001, mm.width / 2 - 154, mm.height - 28, 100, 20, I18n.format("gui.realmsofavalonmod.serverbutton")));
+            }
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     @SideOnly(Side.CLIENT)
     public static void onAPEvent(GuiScreenEvent.ActionPerformedEvent.Post event) {
         GuiButton b = event.getButton();
-        if (b.displayString.equals("Pack Official Servers") && b.id >= 6000 && hasROAServerConfig()) //Hopefully, Custom main menu button.
-        {
-            GuiMultiplayerPack pack = new GuiMultiplayerPack(event.getGui());
-            Minecraft.getMinecraft().displayGuiScreen((GuiScreen)pack);
-        } else if (b.displayString.endsWith("Official Servers") && b.id >= 6000 && hasROAServerConfig()) //Hopefully, Custom main menu button.
+        if (b.id == 7001 && hasROAServerConfig()) //Hopefully it's our custom main menu button.
         {
             GuiMultiplayerPack pack = new GuiMultiplayerPack(event.getGui());
             Minecraft.getMinecraft().displayGuiScreen((GuiScreen)pack);
