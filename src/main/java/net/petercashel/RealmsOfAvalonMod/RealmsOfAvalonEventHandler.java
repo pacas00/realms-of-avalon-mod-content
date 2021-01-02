@@ -65,33 +65,33 @@ public class RealmsOfAvalonEventHandler {
 
     @SideOnly(Side.CLIENT)
     private static boolean hasROAServerConfig() {
-        return new File(new File(Minecraft.getMinecraft().mcDataDir, "config"), "RealmsOfAvalonServers.nbt").exists();
+        return new File(new File(Minecraft.getMinecraft().mcDataDir, "config"), RealmsOfAvalonModConfig.serverListFileName).exists();
     }
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void onEvent(GuiScreenEvent.InitGuiEvent event) {
-        RealmsOfAvalonMod.instance.logger.warn(event);
+        if (RealmsOfAvalonModConfig.debugLogging) RealmsOfAvalonMod.instance.logger.warn(event);
         if (event instanceof GuiScreenEvent.InitGuiEvent.Post) {
             if (event.getGui() instanceof GuiMainMenu) {
                 GuiMainMenu mm = (GuiMainMenu) event.getGui();
                 String name = event.getGui().getClass().getSimpleName();
-                if (name.equals("GuiFakeMain") && hasROAServerConfig()) { //By ensureing CMM is loaded, the button is automatically hidden.
+                if (name.equals("GuiFakeMain") && RealmsOfAvalonModConfig.serverListEnabled) { //By ensureing CMM is loaded, the button is automatically hidden.
                     java.util.List<net.minecraft.client.gui.GuiButton> buttons = event.getButtonList();
                     if (serverListButton == null) {
                         serverListButton = new GuiButton(7001, mm.width / 2 - 154, mm.height - 28, 100, 20, I18n.format("gui.realmsofavalonmod.serverbutton"));
                         buttons.add(serverListButton);
-                        RealmsOfAvalonMod.instance.logger.warn("Added Button to menu");
+                        if (RealmsOfAvalonModConfig.debugLogging) RealmsOfAvalonMod.instance.logger.warn("Added Button to menu");
                     }
                     if (!buttons.contains(serverListButton)) {
                         buttons.add(serverListButton);
-                        RealmsOfAvalonMod.instance.logger.warn("Added Button to menu");
+                        if (RealmsOfAvalonModConfig.debugLogging) RealmsOfAvalonMod.instance.logger.warn("Added Button to menu");
                     }
                     event.setButtonList(buttons);
                 } else {
-                    RealmsOfAvalonMod.instance.logger.warn("Had Mainmenu, but with name " + name);
+                    if (RealmsOfAvalonModConfig.debugLogging) RealmsOfAvalonMod.instance.logger.warn("Had Mainmenu, but with name " + name);
                 }
-                if (launchedSplashScreen == false && name.equals("GuiFakeMain") && hasROAServerConfig()) {
+                if (launchedSplashScreen == false && name.equals("GuiFakeMain") && RealmsOfAvalonModConfig.splashEnabled) {
                     launchedSplashScreen = true;
 
                     GuiSplashScreenPack pack = new GuiSplashScreenPack(event.getGui());
