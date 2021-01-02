@@ -112,7 +112,7 @@ jobs:
         project_id: 430049
         game_endpoint: minecraft
         file_path: build/libs/realmsofavalonmod-${{ steps.tag_version.outputs.new_tag }}.jar
-        changelog: ${{ steps.changelog.outputs.changelog }}
+        changelog: ${{ steps.changelog.outputs.changelog }} \n Github Actions Automated Upload from ${{ steps.create_release.outputs.html_url }}
         display_name: Realms of Avalon Mod ${{ steps.tag_version.outputs.new_version }}
         game_versions: minecraft-1-12:1.12.2,Java 8,Forge
         release_type: alpha
