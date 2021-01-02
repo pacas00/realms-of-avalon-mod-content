@@ -23,6 +23,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.petercashel.RealmsOfAvalonMod.Blocks.Detectors.BlockCartDetector;
 import net.petercashel.RealmsOfAvalonMod.Entity.EntityPlumYeti;
@@ -70,6 +71,9 @@ public class RealmsOfAvalonMod
         logger = event.getModLog();
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(RealmsOfAvalonEventHandler.class);
+
+        if (event.getSide() == Side.CLIENT)
+        MinecraftForge.EVENT_BUS.register(RealmsOfAvalonEventHandlerClient.class);
 
         SoundEventsInit.INSTANCE.PreInit(event);
         BlockInit.PreInit(event);
