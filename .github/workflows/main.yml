@@ -14,6 +14,7 @@ jobs:
   build:
 
     runs-on: self-hosted
+    environment: Release
 
     steps:
     - uses: actions/checkout@v2
@@ -102,3 +103,17 @@ jobs:
         asset_path: build/libs/realmsofavalonmod-${{ steps.tag_version.outputs.new_tag }}.jar
         asset_name: realmsofavalonmod-${{ steps.tag_version.outputs.new_tag }}.jar
         asset_content_type: application/java-archive
+    
+    - name: Release to CurseForge
+      id: cfupload
+      uses: itsmeow/curseforge-upload@v3
+      with:
+        token: ${{ secrets.CURSEFORGEAPI }}
+        project_id: 430049
+        game_endpoint: minecraft
+        file_path: build/libs/realmsofavalonmod-${{ steps.tag_version.outputs.new_tag }}.jar
+        changelog: ${{ steps.changelog.outputs.changelog }}
+        display_name: Realms of Avalon Mod ${{ steps.tag_version.outputs.new_version }}
+        game_versions: minecraft-1-12:1.12.2,Java 8,Forge
+        release_type: alpha
+        relations: cofh-core:requiredDependency,redstone-flux:requiredDependency,thermal-foundation:requiredDependency,thermal-expansion:requiredDependency
