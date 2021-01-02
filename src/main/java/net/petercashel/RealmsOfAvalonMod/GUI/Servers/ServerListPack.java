@@ -10,6 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonModConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,7 +38,7 @@ public class ServerListPack
         try
         {
             this.servers.clear();
-            NBTTagCompound nbttagcompound = CompressedStreamTools.read(new File(new File(this.mc.mcDataDir, "config"), "RealmsOfAvalonServers.nbt")); //config
+            NBTTagCompound nbttagcompound = CompressedStreamTools.read(new File(new File(this.mc.mcDataDir, "config"), RealmsOfAvalonModConfig.serverListFileName)); //config
 
             if (nbttagcompound == null)
             {
@@ -74,7 +75,7 @@ public class ServerListPack
 
             NBTTagCompound nbttagcompound = new NBTTagCompound();
             nbttagcompound.setTag("servers", nbttaglist);
-            CompressedStreamTools.safeWrite(nbttagcompound, new File(new File(this.mc.mcDataDir, "config"), "RealmsOfAvalonServers.nbt"));
+            CompressedStreamTools.safeWrite(nbttagcompound, new File(new File(this.mc.mcDataDir, "config"), RealmsOfAvalonModConfig.serverListFileName));
         }
         catch (Exception exception)
         {
