@@ -1,26 +1,15 @@
 package net.petercashel.RealmsOfAvalonMod.GUI.Splash;
 
-import codechicken.lib.colour.Colour;
-import codechicken.lib.colour.ColourRGBA;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import mezz.jei.color.ColorUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.gui.*;
-import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.network.ServerPinger;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.petercashel.RealmsOfAvalonMod.GUI.Servers.ServerListEntryNormalPack;
-import net.petercashel.RealmsOfAvalonMod.GUI.Servers.ServerListPack;
-import net.petercashel.RealmsOfAvalonMod.GUI.Servers.ServerSelectionListPack;
+import net.petercashel.RealmsOfAvalonMod.GUI.VideoRendering.IVideoFrameDecoder;
+import net.petercashel.RealmsOfAvalonMod.GUI.VideoRendering.VideoFrameDecoder;
 import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonModConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,14 +21,12 @@ import org.jcodec.scale.AWTUtil;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.Color;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -66,12 +53,8 @@ public class GuiSplashScreenPack extends GuiScreen
     private boolean backgroundExists = false;
     private boolean videoFileExists = false;
     private File videoFile = null;
-    private FrameGrab grab = null;
-    private int videoFrameCurrent = 0;
-    private ByteBuffer buffer = null;
-    private Picture picture = null;;
-    private BufferedImage image = null;
-    private int currTextureID = 0;
+
+    IVideoFrameDecoder videoFrameDecoder = null;
 
     public GuiSplashScreenPack(GuiScreen parentScreen)
     {
@@ -103,23 +86,9 @@ public class GuiSplashScreenPack extends GuiScreen
             //Check if a video exists, if so, load some info
             if (videoFileExists) {
                 //LOAD DATA
-                try {
-                    grab = FrameGrab.createFrameGrab(NIOUtils.readableChannel(videoFile));
-                    picture = grab.getNativeFrame();
-                    if (picture == null) {
-                        videoFileExists = false;
-                    }
-                    else {
-                        image = AWTUtil.toBufferedImage(picture);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JCodecException e) {
-                    e.printStackTrace();
-                }
-
-                currTextureID = glGenTextures();
-                BindNextFrame();
+                videoFrameDecoder = new VideoFrameDecoder(videoFile, glGenTextures());
+                videoFrameDecoder.Setup();
+                videoFrameDecoder.StartThread();
             }
 
             //If we shouldn't force the static background to stay on, and we have a video background, disable static
@@ -133,59 +102,7 @@ public class GuiSplashScreenPack extends GuiScreen
         this.createButtons();
     }
 
-    private void BindNextFrame() {
-        if (videoFileExists) {
-                try {
-                    if (null != (picture = grab.getNativeFrame())) {
-                        try {
-                            AWTUtil.toBufferedImage(picture, image);
-                        } catch (ArrayIndexOutOfBoundsException ex) {
-                            image = AWTUtil.toBufferedImage(picture);
-                        }
 
-                        int[] pixels = new int[image.getWidth() * image.getHeight()];
-                        image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
-
-
-                        int size = image.getWidth() * image.getHeight() * 4;
-                        if (buffer == null || buffer.capacity() < size) {
-                            buffer = BufferUtils.createByteBuffer(size); //4 for RGBA, 3 for RGB
-                        }
-                        buffer.rewind();
-
-                        for(int y = 0; y < image.getHeight(); y++){
-                            for(int x = 0; x < image.getWidth(); x++){
-                                int pixel = pixels[y * image.getWidth() + x];
-                                buffer.put((byte) ((pixel >> 16) & 0xFF));     // Red component
-                                buffer.put((byte) ((pixel >> 8) & 0xFF));      // Green component
-                                buffer.put((byte) (pixel & 0xFF));	            // Blue component
-                                buffer.put((byte) ((pixel >> 24) & 0xFF));    // Alpha component. Only for RGBA
-                            }
-                        }
-
-                        buffer.flip(); //FOR THE LOVE OF GOD DO NOT FORGET THIS
-
-                        // You now have a ByteBuffer filled with the color data of each pixel.
-                        // Now just create a texture ID and bind it. Then you can load it using
-                        // whatever OpenGL method you want, for example:
-
-                        //int textureID = glGenTextures(); //Generate texture ID
-                        glBindTexture(GL_TEXTURE_2D, currTextureID); //Bind texture ID
-
-                        //Setup texture scaling filtering
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-                        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-                    } else {
-                        grab.seekToSecondSloppy(0.0d);
-                        grab.seekToFramePrecise(0);
-                    }
-                } catch (IOException | JCodecException e) {
-                    e.printStackTrace();
-                }
-            }
-    }
 
     /**
      * Handles mouse input.
@@ -217,6 +134,7 @@ public class GuiSplashScreenPack extends GuiScreen
     public void onGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
+        videoFrameDecoder.StopThread();
     }
 
     /**
@@ -244,7 +162,7 @@ public class GuiSplashScreenPack extends GuiScreen
     }
 
     private void TriggerClose() {
-
+        videoFrameDecoder.StopThread();
         this.mc.displayGuiScreen(this.parentScreen);
     }
 
@@ -270,7 +188,6 @@ public class GuiSplashScreenPack extends GuiScreen
 
         if (videoFileExists && RealmsOfAvalonModConfig.splashVideoEnabled) {
             this.drawVideoFrame();
-            BindNextFrame();
         }
 
         if (backgroundExists) {
@@ -425,7 +342,8 @@ public class GuiSplashScreenPack extends GuiScreen
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
 
-        GlStateManager.bindTexture(currTextureID);
+        videoFrameDecoder.BindNextFrame();
+        GlStateManager.bindTexture(videoFrameDecoder.currTextureID);
 
         GL11.glPushMatrix();
         GL11.glTranslatef((float)0, (float)0, 0.0F);
