@@ -21,14 +21,25 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.petercashel.RealmsOfAvalonMod.GUI.Servers.ServerListEntryNormalPack;
 import net.petercashel.RealmsOfAvalonMod.GUI.Servers.ServerListPack;
 import net.petercashel.RealmsOfAvalonMod.GUI.Servers.ServerSelectionListPack;
+import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonModConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jcodec.api.FrameGrab;
+import org.jcodec.api.JCodecException;
+import org.jcodec.common.io.NIOUtils;
+import org.jcodec.common.model.Picture;
+import org.jcodec.scale.AWTUtil;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Color;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -45,11 +56,22 @@ public class GuiSplashScreenPack extends GuiScreen
 
     private static final ResourceLocation logo = new ResourceLocation("mainmenu:textures/splashlogo.png");
     private static final ResourceLocation bg = new ResourceLocation("mainmenu:textures/splashbackground.png");
+    private static final ResourceLocation bgvideo = new ResourceLocation("mainmenu:textures/splashbackgroundvideo.mp4");
     private static final ResourceLocation cloud = new ResourceLocation("mainmenu:textures/cloud.png");
     private static final Random random = new Random();
     private int tickCount = 0;
     private int tickCountText = 0;
     private List<CloudPos> clouds = new ArrayList<CloudPos>();
+
+    private boolean backgroundExists = false;
+    private boolean videoFileExists = false;
+    private File videoFile = null;
+    private FrameGrab grab = null;
+    private int videoFrameCurrent = 0;
+    private ByteBuffer buffer = null;
+    private Picture picture = null;;
+    private BufferedImage image = null;
+    private int currTextureID = 0;
 
     public GuiSplashScreenPack(GuiScreen parentScreen)
     {
@@ -73,9 +95,96 @@ public class GuiSplashScreenPack extends GuiScreen
         {
             this.initialized = true;
             this.mc.getSoundHandler().stopSounds();
+
+            backgroundExists = new File(new File(new File(this.mc.mcDataDir, "resources"), bg.getResourceDomain()), bg.getResourcePath()).exists();
+            videoFile = new File(new File(new File(this.mc.mcDataDir, "resources"), bgvideo.getResourceDomain()), bgvideo.getResourcePath());
+            videoFileExists = videoFile.exists();
+
+            //Check if a video exists, if so, load some info
+            if (videoFileExists) {
+                //LOAD DATA
+                try {
+                    grab = FrameGrab.createFrameGrab(NIOUtils.readableChannel(videoFile));
+                    picture = grab.getNativeFrame();
+                    if (picture == null) {
+                        videoFileExists = false;
+                    }
+                    else {
+                        image = AWTUtil.toBufferedImage(picture);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JCodecException e) {
+                    e.printStackTrace();
+                }
+
+                currTextureID = glGenTextures();
+                BindNextFrame();
+            }
+
+            //If we shouldn't force the static background to stay on, and we have a video background, disable static
+            if (backgroundExists && !RealmsOfAvalonModConfig.splashBackgroundForceEnabled) {
+                if (videoFileExists && RealmsOfAvalonModConfig.splashVideoEnabled) {
+                    backgroundExists = false;
+                }
+            }
         }
 
         this.createButtons();
+    }
+
+    private void BindNextFrame() {
+        if (videoFileExists) {
+                try {
+                    if (null != (picture = grab.getNativeFrame())) {
+                        try {
+                            AWTUtil.toBufferedImage(picture, image);
+                        } catch (ArrayIndexOutOfBoundsException ex) {
+                            image = AWTUtil.toBufferedImage(picture);
+                        }
+
+                        int[] pixels = new int[image.getWidth() * image.getHeight()];
+                        image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
+
+
+                        int size = image.getWidth() * image.getHeight() * 4;
+                        if (buffer == null || buffer.capacity() < size) {
+                            buffer = BufferUtils.createByteBuffer(size); //4 for RGBA, 3 for RGB
+                        }
+                        buffer.rewind();
+
+                        for(int y = 0; y < image.getHeight(); y++){
+                            for(int x = 0; x < image.getWidth(); x++){
+                                int pixel = pixels[y * image.getWidth() + x];
+                                buffer.put((byte) ((pixel >> 16) & 0xFF));     // Red component
+                                buffer.put((byte) ((pixel >> 8) & 0xFF));      // Green component
+                                buffer.put((byte) (pixel & 0xFF));	            // Blue component
+                                buffer.put((byte) ((pixel >> 24) & 0xFF));    // Alpha component. Only for RGBA
+                            }
+                        }
+
+                        buffer.flip(); //FOR THE LOVE OF GOD DO NOT FORGET THIS
+
+                        // You now have a ByteBuffer filled with the color data of each pixel.
+                        // Now just create a texture ID and bind it. Then you can load it using
+                        // whatever OpenGL method you want, for example:
+
+                        //int textureID = glGenTextures(); //Generate texture ID
+                        glBindTexture(GL_TEXTURE_2D, currTextureID); //Bind texture ID
+
+                        //Setup texture scaling filtering
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+                        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+                    } else {
+                        grab.seekToSecondSloppy(0.0d);
+                        grab.seekToFramePrecise(0);
+                    }
+                } catch (IOException | JCodecException e) {
+                    e.printStackTrace();
+                }
+            }
     }
 
     /**
@@ -135,6 +244,7 @@ public class GuiSplashScreenPack extends GuiScreen
     }
 
     private void TriggerClose() {
+
         this.mc.displayGuiScreen(this.parentScreen);
     }
 
@@ -157,15 +267,26 @@ public class GuiSplashScreenPack extends GuiScreen
         int hCenter = this.height / 2;
 
         this.hoveringText = null;
-        this.drawBackground(0, wCenter, hCenter);
 
+        if (videoFileExists && RealmsOfAvalonModConfig.splashVideoEnabled) {
+            this.drawVideoFrame();
+            BindNextFrame();
+        }
+
+        if (backgroundExists) {
+            this.drawBackground(0, wCenter, hCenter);
+        }
+
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent(this));
+
+        //Populate clouds if they are not
         if (clouds.size() == 0) {
             for (int i = 0; i <= 4; i++) {
                 clouds.add(new CloudPos((0 - (random.nextInt(32))) + (i * 120), random.nextInt(this.height / 5)));
             }
         }
 
-        //Clouds, 218x84
+        //If we are short on clouds, generate another
         if (clouds.size() <= 4) {
             if (clouds.size() == 0 || (clouds.get(clouds.size() - 1).x > 100)) {
                 CloudPos c = new CloudPos(0 - (105 + 8), random.nextInt(this.height / 5));
@@ -173,6 +294,7 @@ public class GuiSplashScreenPack extends GuiScreen
             }
         }
 
+        //tick and render clouds
         for (int i = 0; i < clouds.size(); i++) {
             CloudPos pos = clouds.get(i);
             if (tickCount % 3 == 1) {
@@ -183,6 +305,7 @@ public class GuiSplashScreenPack extends GuiScreen
             drawCompleteImage(pos.x, pos.y, 105, 40, cloud, false,true);
         }
 
+        //remove oob clouds
         for (int i = clouds.size() - 1; i >= 0; i--) {
             CloudPos pos = clouds.get(i);
             if (pos.x >= this.width) {
@@ -190,11 +313,13 @@ public class GuiSplashScreenPack extends GuiScreen
             }
         }
 
-        //logo is 619x84
+        //render logo
         int logoX = wCenter - (619 / 4);
         int logoY = hCenter - (84 / 4);
         drawCompleteImage(logoX , logoY - (this.height / 4), 619 / 2, 84 / 2, logo, false, true);
 
+
+        //Pretty sure something in either the colours or the math is wrong below here, but it's fine for now.
 
         //calculate colour
         float lerpAmount = 1.0f;
@@ -245,8 +370,7 @@ public class GuiSplashScreenPack extends GuiScreen
     {
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
-        drawCompleteImage(0,0, this.width, this.height, bg, false, false);
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent(this));
+        drawCompleteImage(0,0, this.width, this.height, bg, false, RealmsOfAvalonModConfig.splashBackgroundBlendEnabled);
     }
 
     public void drawCompleteImage(int posX, int posY, int width, int height, ResourceLocation texture, boolean isTransparent, boolean isBlend) {
@@ -296,6 +420,32 @@ public class GuiSplashScreenPack extends GuiScreen
     }
 
 
+    public void drawVideoFrame() {
+
+        GlStateManager.disableLighting();
+        GlStateManager.disableFog();
+
+        GlStateManager.bindTexture(currTextureID);
+
+        GL11.glPushMatrix();
+        GL11.glTranslatef((float)0, (float)0, 0.0F);
+        GL11.glBegin(7);
+
+        GL11.glTexCoord2f(0.0F, 0.0F);
+        GL11.glVertex3f(0.0F, 0.0F, 0.0F);
+        GL11.glTexCoord2f(0.0F, 1.0F);
+        GL11.glVertex3f(0.0F, (float)height, 0.0F);
+        GL11.glTexCoord2f(1.0F, 1.0F);
+        GL11.glVertex3f((float)width, (float)height, 0.0F);
+        GL11.glTexCoord2f(1.0F, 0.0F);
+        GL11.glVertex3f((float)width, 0.0F, 0.0F);
+
+
+        GL11.glEnd();
+        GL11.glPopMatrix();
+
+    }
+
     public void setHoveringText(String p_146793_1_)
     {
         this.hoveringText = p_146793_1_;
@@ -307,6 +457,7 @@ public class GuiSplashScreenPack extends GuiScreen
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
         super.mouseClicked(mouseX, mouseY, mouseButton);
+        this.TriggerClose();
 
     }
 
@@ -316,7 +467,6 @@ public class GuiSplashScreenPack extends GuiScreen
     protected void mouseReleased(int mouseX, int mouseY, int state)
     {
         super.mouseReleased(mouseX, mouseY, state);
-        this.TriggerClose();
     }
 
 

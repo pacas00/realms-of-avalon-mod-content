@@ -73,11 +73,19 @@ minecraft {
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
 dependencies {
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
     //compile "some.group:artifact:version:classifier"
     //compile "some.group:artifact:version"
+
+    shade "org.jcodec:jcodec:0.2.5"
+    shade "org.jcodec:jcodec-javase:0.2.5"
 	
 	deobfCompile "cofh:RedstoneFlux:${config.rf_mc_version}-${config.rf_version}:universal"
     deobfCompile "cofh:CoFHCore:${config.mc_version}-${config.cofh_core_version}:universal"
@@ -128,6 +136,14 @@ processResources {
 }
 
 sourceSets { main { output.resourcesDir = "$buildDir/generated-resources-dir/" } }
+
+jar {
+    configurations.shade.each { dep ->
+        from(project.zipTree(dep)){
+            exclude 'META-INF', 'META-INF/**', 'git.properties'
+        }
+    }
+}
 
 task signJar(type: SignJar, dependsOn: reobfJar) {
 //    onlyIf {

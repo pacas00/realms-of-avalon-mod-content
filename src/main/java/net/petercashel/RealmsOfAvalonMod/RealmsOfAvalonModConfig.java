@@ -14,6 +14,15 @@ public class RealmsOfAvalonModConfig {
     @Config.Comment("Splash Enabled")
     public static boolean splashEnabled = false;
 
+    @Config.Comment("Splash Video Enabled")
+    public static boolean splashVideoEnabled = true;
+
+    @Config.Comment("Splash Background Force Enabled")
+    public static boolean splashBackgroundForceEnabled = false;
+
+    @Config.Comment("Splash Background Blend Enabled")
+    public static boolean splashBackgroundBlendEnabled = false;
+
     @Config.Comment("Server List Enabled. Use Custom MainMenu and wrapped button ID 7001 for the menu button.")
     public static boolean serverListEnabled = false;
 
