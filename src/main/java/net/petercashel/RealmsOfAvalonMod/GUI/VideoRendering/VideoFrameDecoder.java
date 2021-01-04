@@ -67,7 +67,7 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
                     long start = System.currentTimeMillis();
                     LoadNextFrame();
                     long timeElapsed = System.currentTimeMillis() - start;
-                    if (timeElapsed < 10) {
+                    if (timeElapsed < 100) {
                         try {
                             if (Stop) break;
                             Thread.sleep(100 - timeElapsed);
