@@ -15,10 +15,10 @@ public class RealmsOfAvalonModConfig {
     public static boolean splashEnabled = false;
 
     @Config.Comment("Splash Video Enabled")
-    public static boolean splashVideoEnabled = true;
+    public static boolean splashVideoEnabled = false;
 
     @Config.Comment("Splash Video Show FPS")
-    public static boolean splashVideoShowFPS = true;
+    public static boolean splashVideoShowFPS = false;
 
     @Config.Comment("Splash Background Force Enabled")
     public static boolean splashBackgroundForceEnabled = false;
