@@ -1,12 +1,5 @@
 package net.petercashel.RealmsOfAvalonMod.GUI.VideoRendering;
 
-import org.jcodec.api.FrameGrab;
-import org.jcodec.common.model.Picture;
-
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.nio.ByteBuffer;
-
 public interface IVideoFrameDecoder {
 
 
@@ -14,11 +7,13 @@ public interface IVideoFrameDecoder {
 
     int FPSAVG();
 
-    void Setup();
+    int Setup(int loadingTexID);
 
     void StopThread();
 
     void StartThread();
 
-    public void BindNextFrame();
+    public boolean BindNextFrame();
+
+    public void ToggleFPSLock();
 }

@@ -27,6 +27,7 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
     public int currTextureID = 0;
 
     public int videoFPSAVG = 0;
+    public boolean fpsLock = true;
 
     public int FPSAVG() {
         return videoFPSAVG;
@@ -40,8 +41,8 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
 
     private boolean isSetup = false;
     @Override
-    public void Setup() {
-        if (isSetup) return;
+    public int Setup(int loadingTexID) {
+        if (isSetup) return 0;
         try {
             grab = FrameGrab.createFrameGrab(NIOUtils.readableChannel(videoFile));
             picture = grab.getNativeFrame();
@@ -51,14 +52,45 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
             else {
                 image = AWTUtil.toBufferedImage(picture);
             }
+
+            //Load and Bind onto new passed in ID
+            int[] pixels = new int[image.getWidth() * image.getHeight()];
+            image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
+
+            int size = image.getWidth() * image.getHeight() * 4;
+            if (buffer == null || buffer.capacity() < size) {
+                buffer = BufferUtils.createByteBuffer(size); //4 for RGBA, 3 for RGB
+            }
+            buffer.rewind();
+
+            for(int y = 0; y < image.getHeight(); y++){
+                for(int x = 0; x < image.getWidth(); x++){
+                    int pixel = pixels[y * image.getWidth() + x];
+                    buffer.put((byte) ((pixel >> 16) & 0xFF));     // Red component
+                    buffer.put((byte) ((pixel >> 8) & 0xFF));      // Green component
+                    buffer.put((byte) (pixel & 0xFF));	            // Blue component
+                    buffer.put((byte) ((pixel >> 24) & 0xFF));    // Alpha component. Only for RGBA
+                }
+            }
+
+            buffer.flip(); //FOR THE LOVE OF GOD DO NOT FORGET THIS
+
+            glBindTexture(GL_TEXTURE_2D, loadingTexID); //Bind texture ID
+
+            //Setup texture scaling filtering
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JCodecException e) {
             e.printStackTrace();
         }
 
-        LoadNextFrame();
         isSetup = true;
+        return loadingTexID;
     }
 
     //Thread
@@ -75,7 +107,8 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
                     long timeElapsed = System.currentTimeMillis() - start;
                     average =  ( timeElapsed + average ) / 2;
                     videoFPSAVG = (int) (1000 / average);
-                    if (timeElapsed < 40) {
+                    if (videoFPSAVG > 25 && fpsLock) videoFPSAVG = 25;
+                    if (timeElapsed < 40 && fpsLock) {
                         try {
                             if (Stop) break;
                             Thread.sleep(40 - timeElapsed);
@@ -162,7 +195,7 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
         }
     }
 
-    public synchronized void BindNextFrame() {
+    public synchronized boolean BindNextFrame() {
         synchronized(this) {
             // You now have a ByteBuffer filled with the color data of each pixel.
             // Now just create a texture ID and bind it. Then you can load it using
@@ -176,6 +209,16 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, activeBuffer);
+
+            if (activeBuffer != null) {
+                return true;
+            }
         }
+        return false;
+    }
+
+    @Override
+    public void ToggleFPSLock() {
+        this.fpsLock = !this.fpsLock;
     }
 }

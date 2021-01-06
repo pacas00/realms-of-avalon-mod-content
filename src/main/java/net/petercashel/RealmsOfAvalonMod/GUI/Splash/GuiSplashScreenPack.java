@@ -27,10 +27,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.function.IntPredicate;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glGenTextures;
 
 @SideOnly(Side.CLIENT)
 public class GuiSplashScreenPack extends GuiScreen
@@ -52,7 +55,9 @@ public class GuiSplashScreenPack extends GuiScreen
 
     private boolean backgroundExists = false;
     private boolean videoFileExists = false;
+    private boolean showVideo = true;
     private File videoFile = null;
+    private int videoLoadingImageTexID = 0;
 
     IVideoFrameDecoder videoFrameDecoder = null;
 
@@ -87,7 +92,7 @@ public class GuiSplashScreenPack extends GuiScreen
             if (videoFileExists) {
                 //LOAD DATA
                 videoFrameDecoder = new VideoFrameDecoder(videoFile, glGenTextures());
-                videoFrameDecoder.Setup();
+                videoLoadingImageTexID = videoFrameDecoder.Setup(glGenTextures());
                 videoFrameDecoder.StartThread();
             }
 
@@ -151,6 +156,13 @@ public class GuiSplashScreenPack extends GuiScreen
         }
     }
 
+    //Ctrl Mac, Ctrl Mac, Ctrl, Ctrl, Alt, Alt, Shift, Shift
+    int[] specialKeys = new int[] {219, 220, 29, 157, 56, 184, 42, 54, Keyboard.KEY_F11};
+
+    public static boolean isKeyComboCtrl(int keyID, int comboKeyID)
+    {
+        return keyID == comboKeyID && isCtrlKeyDown() && !isShiftKeyDown() && !isAltKeyDown();
+    }
 
     /**
      * Fired when a key is typed (except F11 which toggles full screen). This is the equivalent of
@@ -158,7 +170,39 @@ public class GuiSplashScreenPack extends GuiScreen
      */
     protected void keyTyped(char typedChar, int keyCode) throws IOException
     {
+        if (isKeyComboCtrl(keyCode, Keyboard.KEY_L)) {
+            this.videoFrameDecoder.ToggleFPSLock();
+        } else if (isKeyComboCtrl(keyCode, Keyboard.KEY_P)) {
+            RealmsOfAvalonModConfig.splashVideoShowFPS = !RealmsOfAvalonModConfig.splashVideoShowFPS;
+        } else if (isKeyComboCtrl(keyCode, Keyboard.KEY_APOSTROPHE)) {
+            this.backgroundExists = !this.backgroundExists;
+        } else if (isKeyComboCtrl(keyCode, Keyboard.KEY_SEMICOLON)) {
+            this.showVideo = !this.showVideo;
+        } else {
+            if (!Arrays.stream(specialKeys).anyMatch(x -> x == keyCode)) {
+                this.TriggerClose();
+            } else {
+                super.keyTyped(typedChar, keyCode);
+            }
+        }
+    }
+
+    /**
+     * Called when the mouse is clicked. Args : mouseX, mouseY, clickedButton
+     */
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+    {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
         this.TriggerClose();
+
+    }
+
+    /**
+     * Called when a mouse button is released.
+     */
+    protected void mouseReleased(int mouseX, int mouseY, int state)
+    {
+        super.mouseReleased(mouseX, mouseY, state);
     }
 
     private void TriggerClose() {
@@ -186,12 +230,12 @@ public class GuiSplashScreenPack extends GuiScreen
 
         this.hoveringText = null;
 
-        if (videoFileExists && RealmsOfAvalonModConfig.splashVideoEnabled) {
-            this.drawVideoFrame();
+        if (videoFileExists && showVideo && RealmsOfAvalonModConfig.splashVideoEnabled) {
+            this.drawVideoFrame(true, -1);
         }
 
         if (backgroundExists) {
-            this.drawBackground(0, wCenter, hCenter);
+            this.drawBackground(0, wCenter, hCenter, bg, RealmsOfAvalonModConfig.splashBackgroundBlendEnabled, 0);
         }
 
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent(this));
@@ -219,7 +263,7 @@ public class GuiSplashScreenPack extends GuiScreen
             }
             clouds.set(i, pos);
 
-            drawCompleteImage(pos.x, pos.y, 105, 40, cloud, false,true);
+            drawCompleteImage(pos.x, pos.y, 105, 40, cloud, false,true, 0);
         }
 
         //remove oob clouds
@@ -233,7 +277,7 @@ public class GuiSplashScreenPack extends GuiScreen
         //render logo
         int logoX = wCenter - (619 / 4);
         int logoY = hCenter - (84 / 4);
-        drawCompleteImage(logoX , logoY - (this.height / 4), 619 / 2, 84 / 2, logo, false, true);
+        drawCompleteImage(logoX , logoY - (this.height / 4), 619 / 2, 84 / 2, logo, false, true, 0);
 
 
         //Pretty sure something in either the colours or the math is wrong below here, but it's fine for now.
@@ -260,10 +304,10 @@ public class GuiSplashScreenPack extends GuiScreen
         }
 
         if (RealmsOfAvalonModConfig.splashVideoShowFPS) {
-            if (videoFrameDecoder.FPSAVG() > 25) {
-                this.drawCenteredString(this.fontRenderer, "" + videoFrameDecoder.FPSAVG(), this.width - 8, 2, 16777215);
+            if (videoFrameDecoder.FPSAVG() >= 25) {
+                this.drawCenteredString(this.fontRenderer, "" + videoFrameDecoder.FPSAVG(), this.width - 8, 2, 16777215); //White text
             } else {
-                this.drawCenteredString(this.fontRenderer, "" + videoFrameDecoder.FPSAVG(), this.width - 8, 2, 8327184);
+                this.drawCenteredString(this.fontRenderer, "" + videoFrameDecoder.FPSAVG(), this.width - 8, 2, 8327184); //Red Text, less than 25 fps for decode
             }
         }
     }
@@ -291,18 +335,16 @@ public class GuiSplashScreenPack extends GuiScreen
     /**
      * Draws the background (i is always 0 as of 1.2.2)
      */
-    public void drawBackground(int tint, int wCenter, int hCenter)
+    public void drawBackground(int tint, int wCenter, int hCenter, ResourceLocation texture, boolean blend, int depth)
     {
-        GlStateManager.disableLighting();
-        GlStateManager.disableFog();
-        drawCompleteImage(0,0, this.width, this.height, bg, false, RealmsOfAvalonModConfig.splashBackgroundBlendEnabled);
+        drawCompleteImage(0,0, this.width, this.height, texture, false, blend, depth);
     }
 
-    public void drawCompleteImage(int posX, int posY, int width, int height, ResourceLocation texture, boolean isTransparent, boolean isBlend) {
-        drawCompleteImage((float) posX, (float) posY, width, height, texture, isTransparent, isBlend);
+    public void drawCompleteImage(int posX, int posY, int width, int height, ResourceLocation texture, boolean isTransparent, boolean isBlend, int depth) {
+        drawCompleteImage((float) posX, (float) posY, width, height, texture, isTransparent, isBlend, depth);
     }
 
-    public void drawCompleteImage(float posX, float posY, int width, int height, ResourceLocation texture, boolean isTransparent, boolean isBlend) {
+    public void drawCompleteImage(float posX, float posY, int width, int height, ResourceLocation texture, boolean isTransparent, boolean isBlend, int depth) {
         if (isTransparent) {
             GlStateManager.enableAlpha();
         }
@@ -322,13 +364,13 @@ public class GuiSplashScreenPack extends GuiScreen
         }
 
         GL11.glTexCoord2f(0.0F, 0.0F);
-        GL11.glVertex3f(0.0F, 0.0F, 0.0F);
+        GL11.glVertex3f(0.0F, 0.0F, depth);
         GL11.glTexCoord2f(0.0F, 1.0F);
-        GL11.glVertex3f(0.0F, (float)height, 0.0F);
+        GL11.glVertex3f(0.0F, (float)height, depth);
         GL11.glTexCoord2f(1.0F, 1.0F);
-        GL11.glVertex3f((float)width, (float)height, 0.0F);
+        GL11.glVertex3f((float)width, (float)height, depth);
         GL11.glTexCoord2f(1.0F, 0.0F);
-        GL11.glVertex3f((float)width, 0.0F, 0.0F);
+        GL11.glVertex3f((float)width, 0.0F, depth);
 
 
         GL11.glEnd();
@@ -345,54 +387,45 @@ public class GuiSplashScreenPack extends GuiScreen
     }
 
 
-    public void drawVideoFrame() {
+    public void drawVideoFrame(boolean isBlend, int depth) {
 
-        GlStateManager.disableLighting();
-        GlStateManager.disableFog();
+        if (isBlend) {
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
 
-        videoFrameDecoder.BindNextFrame();
-        GlStateManager.bindTexture(videoFrameDecoder.currTextureID);
+        boolean bindResult = videoFrameDecoder.BindNextFrame();
+        if (bindResult) {
+            GlStateManager.bindTexture(videoFrameDecoder.currTextureID);
+        } else {
+            GlStateManager.bindTexture(this.videoLoadingImageTexID);
+        }
 
         GL11.glPushMatrix();
         GL11.glTranslatef((float)0, (float)0, 0.0F);
         GL11.glBegin(7);
 
-        GL11.glTexCoord2f(0.0F, 0.0F);
-        GL11.glVertex3f(0.0F, 0.0F, 0.0F);
-        GL11.glTexCoord2f(0.0F, 1.0F);
-        GL11.glVertex3f(0.0F, (float)height, 0.0F);
-        GL11.glTexCoord2f(1.0F, 1.0F);
-        GL11.glVertex3f((float)width, (float)height, 0.0F);
-        GL11.glTexCoord2f(1.0F, 0.0F);
-        GL11.glVertex3f((float)width, 0.0F, 0.0F);
+        GL11.glTexCoord3f(0.0F, 0.0F, depth);
+        GL11.glVertex3f(0.0F, 0.0F, depth);
+        GL11.glTexCoord3f(0.0F, 1.0F, depth);
+        GL11.glVertex3f(0.0F, (float)height, depth);
+        GL11.glTexCoord3f(1.0F, 1.0F, depth);
+        GL11.glVertex3f((float)width, (float)height, depth);
+        GL11.glTexCoord3f(1.0F, 0.0F, depth);
+        GL11.glVertex3f((float)width, 0.0F, depth);
 
 
         GL11.glEnd();
         GL11.glPopMatrix();
 
+        if (isBlend) {
+            glDisable(GL_BLEND);
+        }
     }
 
     public void setHoveringText(String p_146793_1_)
     {
         this.hoveringText = p_146793_1_;
-    }
-
-    /**
-     * Called when the mouse is clicked. Args : mouseX, mouseY, clickedButton
-     */
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-    {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-        this.TriggerClose();
-
-    }
-
-    /**
-     * Called when a mouse button is released.
-     */
-    protected void mouseReleased(int mouseX, int mouseY, int state)
-    {
-        super.mouseReleased(mouseX, mouseY, state);
     }
 
 
