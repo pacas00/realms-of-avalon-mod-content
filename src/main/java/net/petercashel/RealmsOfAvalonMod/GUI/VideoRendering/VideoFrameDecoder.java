@@ -26,6 +26,12 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
     private BufferedImage image = null;
     public int currTextureID = 0;
 
+    public int videoFPSAVG = 0;
+
+    public int FPSAVG() {
+        return videoFPSAVG;
+    }
+
     public VideoFrameDecoder(File videoFile, int GLTextureID) {
         this.videoFile = videoFile;
         videoFileExists = videoFile.exists();
@@ -52,7 +58,6 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
         }
 
         LoadNextFrame();
-        BindNextFrame();
         isSetup = true;
     }
 
@@ -61,16 +66,19 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
     Thread videoThread = new Thread(new Runnable() {
         @Override
         public void run() {
+            long average = 1;
             while (!Stop) {
                 if (!Stop)
                 {
                     long start = System.currentTimeMillis();
                     LoadNextFrame();
                     long timeElapsed = System.currentTimeMillis() - start;
-                    if (timeElapsed < 100) {
+                    average =  ( timeElapsed + average ) / 2;
+                    videoFPSAVG = (int) (1000 / average);
+                    if (timeElapsed < 40) {
                         try {
                             if (Stop) break;
-                            Thread.sleep(100 - timeElapsed);
+                            Thread.sleep(40 - timeElapsed);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -78,6 +86,7 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
                 }
                 if (Stop) break;
             }
+            System.out.println(average + " was average");
         }
     });
 
@@ -145,7 +154,6 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
                     timeElapsed = System.currentTimeMillis() - start;
 
                 } else {
-                    grab.seekToSecondSloppy(0.0d);
                     grab.seekToFramePrecise(0);
                 }
             } catch (IOException | JCodecException e) {

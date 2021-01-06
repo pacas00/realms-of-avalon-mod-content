@@ -258,6 +258,14 @@ public class GuiSplashScreenPack extends GuiScreen
         {
             this.drawHoveringText(Lists.newArrayList(Splitter.on("\n").split(this.hoveringText)), mouseX, mouseY);
         }
+
+        if (RealmsOfAvalonModConfig.splashVideoShowFPS) {
+            if (videoFrameDecoder.FPSAVG() > 25) {
+                this.drawCenteredString(this.fontRenderer, "" + videoFrameDecoder.FPSAVG(), this.width - 8, 2, 16777215);
+            } else {
+                this.drawCenteredString(this.fontRenderer, "" + videoFrameDecoder.FPSAVG(), this.width - 8, 2, 8327184);
+            }
+        }
     }
 
     private int LerpTowardsColour(int source, int r, int g, int b, float f) {

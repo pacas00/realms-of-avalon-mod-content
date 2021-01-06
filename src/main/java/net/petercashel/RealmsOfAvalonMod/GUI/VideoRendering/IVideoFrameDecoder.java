@@ -9,13 +9,10 @@ import java.nio.ByteBuffer;
 
 public interface IVideoFrameDecoder {
 
-    File videoFile = null;
-    FrameGrab grab = null;
-    int videoFrameCurrent = 0;
-    ByteBuffer buffer = null;
-    Picture picture = null;
-    BufferedImage image = null;
+
     public int currTextureID = 0;
+
+    int FPSAVG();
 
     void Setup();
 
