@@ -5,12 +5,14 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.petercashel.RealmsOfAvalonMod.GUI.MainMenu.GuiMainMenuPack;
 import net.petercashel.RealmsOfAvalonMod.GUI.Servers.GuiMultiplayerPack;
 import net.petercashel.RealmsOfAvalonMod.GUI.Splash.GuiSplashScreenPack;
 
@@ -29,6 +31,18 @@ public class RealmsOfAvalonEventHandlerClient {
     private static boolean hasROAServerConfig() {
         return new File(new File(Minecraft.getMinecraft().mcDataDir, "config"), RealmsOfAvalonModConfig.serverListFileName).exists();
     }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent(
+            priority = EventPriority.LOWEST
+    )
+    public static void OnOpenGui(GuiOpenEvent event) {
+        if (event.getGui() instanceof GuiMainMenu && RealmsOfAvalonModConfig.customMainMenuEnabled) {
+            event.setGui(new GuiMainMenuPack());
+        }
+
+    }
+
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent(priority = EventPriority.NORMAL)
