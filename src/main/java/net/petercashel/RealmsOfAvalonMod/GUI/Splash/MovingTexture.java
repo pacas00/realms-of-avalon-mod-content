@@ -1,6 +1,5 @@
 package net.petercashel.RealmsOfAvalonMod.GUI.Splash;
 
-import com.sk89q.worldedit.math.noise.RandomNoise;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Random;
