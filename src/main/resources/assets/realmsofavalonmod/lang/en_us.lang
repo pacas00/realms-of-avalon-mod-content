@@ -28,5 +28,6 @@ container.realmsofavalonmod.cartdetectorfluids=Cart Detector Fluids
 entity.plumyeti.name=Big Purple Yeti
 gui.realmsofavalonmod.servers=Official Realms Of Avalon Modpack Servers
 gui.realmsofavalonmod.serverbutton=Official Servers
+gui.realmsofavalonmod.socialbutton=Social
 
 item.record.dodgems.desc=A Music Disc (Placeholder)

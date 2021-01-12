@@ -57,7 +57,7 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
             int[] pixels = new int[image.getWidth() * image.getHeight()];
             image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
 
-            int size = image.getWidth() * image.getHeight() * 4;
+            int size = image.getWidth() * image.getHeight() * 3;
             if (buffer == null || buffer.capacity() < size) {
                 buffer = BufferUtils.createByteBuffer(size); //4 for RGBA, 3 for RGB
             }
@@ -69,7 +69,7 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
                     buffer.put((byte) ((pixel >> 16) & 0xFF));     // Red component
                     buffer.put((byte) ((pixel >> 8) & 0xFF));      // Green component
                     buffer.put((byte) (pixel & 0xFF));	            // Blue component
-                    buffer.put((byte) ((pixel >> 24) & 0xFF));    // Alpha component. Only for RGBA
+                    //buffer.put((byte) ((pixel >> 24) & 0xFF));    // Alpha component. Only for RGBA
                 }
             }
 
@@ -81,7 +81,7 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, image.getWidth(), image.getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, buffer);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -95,39 +95,69 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
 
     //Thread
     private boolean Stop = false;
-    Thread videoThread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            long average = 1;
-            while (!Stop) {
-                if (!Stop)
-                {
-                    long start = System.currentTimeMillis();
-                    LoadNextFrame();
-                    long timeElapsed = System.currentTimeMillis() - start;
-                    average =  ( timeElapsed + average ) / 2;
-                    videoFPSAVG = (int) (1000 / average);
-                    if (videoFPSAVG > 25 && fpsLock) videoFPSAVG = 25;
-                    if (timeElapsed < 40 && fpsLock) {
-                        try {
-                            if (Stop) break;
-                            Thread.sleep(40 - timeElapsed);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+    Thread videoThread = CreateThread();
+
+    private Thread CreateThread() {
+        return new Thread(new Runnable() {
+            @Override
+            public void run() {
+                long average = 1;
+                while (!Stop) {
+                    if (!Stop)
+                    {
+                        if (grab == null) {
+                            //WHAT
+                            try {
+                                grab = FrameGrab.createFrameGrab(NIOUtils.readableChannel(videoFile));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } catch (JCodecException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        long start = System.currentTimeMillis();
+                        LoadNextFrame();
+                        long timeElapsed = System.currentTimeMillis() - start;
+                        average =  ( timeElapsed + average ) / 2;
+                        videoFPSAVG = (int) (1000 / average);
+                        if (videoFPSAVG > 25 && fpsLock) videoFPSAVG = 25;
+                        if (timeElapsed < 40 && fpsLock) {
+                            try {
+                                if (Stop) break;
+                                Thread.sleep(40 - timeElapsed);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
+                    if (Stop) break;
                 }
-                if (Stop) break;
+                System.out.println(average + " was average");
             }
-            System.out.println(average + " was average");
-        }
-    });
+        });
+    }
 
 
     @Override
     public void StartThread() {
         Stop = false;
-        videoThread.start();
+        if (videoThread.getState() != Thread.State.NEW && videoThread.getState() != Thread.State.RUNNABLE) {
+            if (videoThread != null) {
+                Stop = true;
+                while (videoThread.getState() != Thread.State.TERMINATED) {
+                    //Block and stop the thread
+                }
+                Stop = false;
+            }
+
+            videoThread = CreateThread();
+        }
+
+        if (videoThread.getState() == Thread.State.NEW) {
+            videoThread.start();
+        }
+
     }
 
     @Override
@@ -191,6 +221,21 @@ public class VideoFrameDecoder implements IVideoFrameDecoder {
                 }
             } catch (IOException | JCodecException e) {
                 e.printStackTrace();
+                try {
+                    grab.seekToFramePrecise(0);
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                } catch (JCodecException jCodecException) {
+                    jCodecException.printStackTrace();
+                }
+            } catch (NullPointerException npe) {
+                try {
+                    grab = FrameGrab.createFrameGrab(NIOUtils.readableChannel(videoFile));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JCodecException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

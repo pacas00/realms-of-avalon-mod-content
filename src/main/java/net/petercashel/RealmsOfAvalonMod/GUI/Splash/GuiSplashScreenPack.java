@@ -8,35 +8,29 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.petercashel.RealmsOfAvalonMod.GUI.Controls.Textures;
+import net.petercashel.RealmsOfAvalonMod.GUI.GuiScreenPack;
+import net.petercashel.RealmsOfAvalonMod.GUI.MainMenu.GuiMainMenuPack;
 import net.petercashel.RealmsOfAvalonMod.GUI.VideoRendering.IVideoFrameDecoder;
 import net.petercashel.RealmsOfAvalonMod.GUI.VideoRendering.VideoFrameDecoder;
 import net.petercashel.RealmsOfAvalonMod.RealmsOfAvalonModConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jcodec.api.FrameGrab;
-import org.jcodec.api.JCodecException;
-import org.jcodec.common.io.NIOUtils;
-import org.jcodec.common.model.Picture;
-import org.jcodec.scale.AWTUtil;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.function.IntPredicate;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.glGenTextures;
 
 @SideOnly(Side.CLIENT)
-public class GuiSplashScreenPack extends GuiScreen
+public class GuiSplashScreenPack extends GuiScreenPack
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private final GuiScreen parentScreen;
@@ -44,26 +38,44 @@ public class GuiSplashScreenPack extends GuiScreen
     private String hoveringText;
     private boolean initialized;
 
-    private static final ResourceLocation logo = new ResourceLocation("mainmenu:textures/splashlogo.png");
-    private static final ResourceLocation bg = new ResourceLocation("mainmenu:textures/splashbackground.png");
-    private static final ResourceLocation bgvideo = new ResourceLocation("mainmenu:textures/splashbackgroundvideo.mp4");
-    private static final ResourceLocation cloud = new ResourceLocation("mainmenu:textures/cloud.png");
     private static final Random random = new Random();
     private int tickCount = 0;
     private int tickCountText = 0;
-    private List<CloudPos> clouds = new ArrayList<CloudPos>();
+    private List<MovingTexture> clouds = new ArrayList<MovingTexture>();
+    private List<MovingTexture> fogs = new ArrayList<MovingTexture>();
 
     private boolean backgroundExists = false;
     private boolean videoFileExists = false;
     private boolean showVideo = true;
     private File videoFile = null;
     private int videoLoadingImageTexID = 0;
+    private boolean DontDisposeOfVideo = false;
 
     IVideoFrameDecoder videoFrameDecoder = null;
+
+
+
+    private boolean showFog = false;
 
     public GuiSplashScreenPack(GuiScreen parentScreen)
     {
         this.parentScreen = parentScreen;
+    }
+
+    public GuiSplashScreenPack(GuiMainMenuPack mainMenu, boolean backgroundExists, boolean videoFileExists, boolean showVideo, File videoFile, IVideoFrameDecoder videoFrameDecoder, int videoLoadingImageTexID)
+    {
+        this.parentScreen = mainMenu;
+        DontDisposeOfVideo = true;
+        this.initialized = true;
+
+        this.backgroundExists = backgroundExists;
+        this.videoFileExists = videoFileExists;
+        this.showVideo = showVideo;
+        this.videoFile = videoFile;
+        this.videoFrameDecoder = videoFrameDecoder;
+        this.videoLoadingImageTexID = videoLoadingImageTexID;
+
+        //videoFrameDecoder.StartThread();
     }
 
     /**
@@ -75,6 +87,12 @@ public class GuiSplashScreenPack extends GuiScreen
         Keyboard.enableRepeatEvents(true);
         this.buttonList.clear();
 
+        if (!showFog) {
+            if (random.nextInt(1000) < 10) {
+                showFog = true;
+            }
+        }
+
         if (this.initialized)
         {
 
@@ -84,8 +102,8 @@ public class GuiSplashScreenPack extends GuiScreen
             this.initialized = true;
             this.mc.getSoundHandler().stopSounds();
 
-            backgroundExists = new File(new File(new File(this.mc.mcDataDir, "resources"), bg.getResourceDomain()), bg.getResourcePath()).exists();
-            videoFile = new File(new File(new File(this.mc.mcDataDir, "resources"), bgvideo.getResourceDomain()), bgvideo.getResourcePath());
+            backgroundExists = new File(new File(new File(this.mc.mcDataDir, "resources"), Textures.splashbg.getResourceDomain()), Textures.splashbg.getResourcePath()).exists();
+            videoFile = new File(new File(new File(this.mc.mcDataDir, "resources"), Textures.splashbgvideo.getResourceDomain()), Textures.splashbgvideo.getResourcePath());
             videoFileExists = videoFile.exists();
 
             //Check if a video exists, if so, load some info
@@ -139,7 +157,7 @@ public class GuiSplashScreenPack extends GuiScreen
     public void onGuiClosed()
     {
         Keyboard.enableRepeatEvents(false);
-        videoFrameDecoder.StopThread();
+        if (!DontDisposeOfVideo) videoFrameDecoder.StopThread();
     }
 
     /**
@@ -154,14 +172,6 @@ public class GuiSplashScreenPack extends GuiScreen
                 this.TriggerClose();
             }
         }
-    }
-
-    //Ctrl Mac, Ctrl Mac, Ctrl, Ctrl, Alt, Alt, Shift, Shift
-    int[] specialKeys = new int[] {219, 220, 29, 157, 56, 184, 42, 54, Keyboard.KEY_F11};
-
-    public static boolean isKeyComboCtrl(int keyID, int comboKeyID)
-    {
-        return keyID == comboKeyID && isCtrlKeyDown() && !isShiftKeyDown() && !isAltKeyDown();
     }
 
     /**
@@ -207,6 +217,12 @@ public class GuiSplashScreenPack extends GuiScreen
 
     private void TriggerClose() {
         videoFrameDecoder.StopThread();
+
+        if (this.parentScreen instanceof GuiMainMenuPack) {
+            //WOOT! TRANSFER INSTANCES
+            ((GuiMainMenuPack)this.parentScreen).SetInstances(showFog, clouds, fogs);
+        }
+
         this.mc.displayGuiScreen(this.parentScreen);
     }
 
@@ -235,49 +251,79 @@ public class GuiSplashScreenPack extends GuiScreen
         }
 
         if (backgroundExists) {
-            this.drawBackground(0, wCenter, hCenter, bg, RealmsOfAvalonModConfig.splashBackgroundBlendEnabled, 0);
+            this.drawBackground(0, wCenter, hCenter, Textures.splashbg, RealmsOfAvalonModConfig.splashBackgroundBlendEnabled, 0);
         }
 
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent(this));
 
-        //Populate clouds if they are not
-        if (clouds.size() == 0) {
-            for (int i = 0; i <= 4; i++) {
-                clouds.add(new CloudPos((0 - (random.nextInt(32))) + (i * 120), random.nextInt(this.height / 5)));
+        if (!showFog) {
+            //Populate clouds if they are not
+            if (clouds.size() == 0) {
+                for (int i = 0; i <= 4; i++) {
+                    clouds.add(new MovingTexture((0 - (random.nextInt(32))) + (i * 120), random.nextInt(this.height / 5), 105, 40, Textures.cloud));
+                }
+            }
+
+            //If we are short on clouds, generate another
+            if (clouds.size() <= 4) {
+                if (clouds.size() == 0 || (clouds.get(clouds.size() - 1).x > 100)) {
+                    MovingTexture c = new MovingTexture(0 - (105 + 8), random.nextInt(this.height / 5), 105, 40, Textures.cloud);
+                    clouds.add(0, c);
+                }
+            }
+
+            //tick and render clouds
+            for (int i = 0; i < clouds.size(); i++) {
+                MovingTexture pos = clouds.get(i);
+                if (tickCount % 3 == 1) {
+                    pos.tick();
+                }
+                clouds.set(i, pos);
+
+                drawMovingTexture(pos.x, pos.y, clouds.get(i), false, true, 0);
+            }
+
+            //remove oob clouds
+            for (int i = clouds.size() - 1; i >= 0; i--) {
+                MovingTexture pos = clouds.get(i);
+                if (pos.x >= this.width) {
+                    clouds.remove(i);
+                }
             }
         }
 
-        //If we are short on clouds, generate another
-        if (clouds.size() <= 4) {
-            if (clouds.size() == 0 || (clouds.get(clouds.size() - 1).x > 100)) {
-                CloudPos c = new CloudPos(0 - (105 + 8), random.nextInt(this.height / 5));
-                clouds.add(0, c);
+        if (showFog) {
+            drawCompleteImage(0 , 0, width, height, Textures.fog, false, true, 0);
+
+            //Populate fogs if they are not
+            if (fogs.size() == 0) {
+                for (int i = 0; i <= 5; i++) {
+                    MovingTexture newFog = new MovingTexture((0 - (random.nextInt(100))), 0, (this.width + 220), height + (height / 4) + random.nextInt(height / 4), Textures.fog);
+                    newFog.BounceMovement = true;
+                    newFog.MoveRight = random.nextBoolean();
+                    newFog.MovementSpeed = 0.015f;
+                    fogs.add(newFog);
+                }
             }
+
+            //tick and render fogs
+            for (int i = 0; i < fogs.size(); i++) {
+                MovingTexture pos = fogs.get(i);
+                if (tickCount % 3 == 1) {
+                    pos.tickWithRandomSpeedBonux(0.25f);
+                }
+                fogs.set(i, pos);
+
+                drawMovingTexture(pos.x, pos.y, fogs.get(i), false, true, 0);
+            }
+
         }
 
-        //tick and render clouds
-        for (int i = 0; i < clouds.size(); i++) {
-            CloudPos pos = clouds.get(i);
-            if (tickCount % 3 == 1) {
-                pos.tick();
-            }
-            clouds.set(i, pos);
-
-            drawCompleteImage(pos.x, pos.y, 105, 40, cloud, false,true, 0);
-        }
-
-        //remove oob clouds
-        for (int i = clouds.size() - 1; i >= 0; i--) {
-            CloudPos pos = clouds.get(i);
-            if (pos.x >= this.width) {
-                clouds.remove(i);
-            }
-        }
 
         //render logo
         int logoX = wCenter - (619 / 4);
         int logoY = hCenter - (84 / 4);
-        drawCompleteImage(logoX , logoY - (this.height / 4), 619 / 2, 84 / 2, logo, false, true, 0);
+        drawCompleteImage(logoX , logoY - (this.height / 4), 619 / 2, 84 / 2, Textures.splashlogo, false, true, 0);
 
 
         //Pretty sure something in either the colours or the math is wrong below here, but it's fine for now.
@@ -331,61 +377,6 @@ public class GuiSplashScreenPack extends GuiScreen
 
         return outA + outB + outG + outR;
     }
-
-    /**
-     * Draws the background (i is always 0 as of 1.2.2)
-     */
-    public void drawBackground(int tint, int wCenter, int hCenter, ResourceLocation texture, boolean blend, int depth)
-    {
-        drawCompleteImage(0,0, this.width, this.height, texture, false, blend, depth);
-    }
-
-    public void drawCompleteImage(int posX, int posY, int width, int height, ResourceLocation texture, boolean isTransparent, boolean isBlend, int depth) {
-        drawCompleteImage((float) posX, (float) posY, width, height, texture, isTransparent, isBlend, depth);
-    }
-
-    public void drawCompleteImage(float posX, float posY, int width, int height, ResourceLocation texture, boolean isTransparent, boolean isBlend, int depth) {
-        if (isTransparent) {
-            GlStateManager.enableAlpha();
-        }
-        if (isBlend) {
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }
-
-        this.mc.getTextureManager().bindTexture(texture);
-
-        GL11.glPushMatrix();
-        GL11.glTranslatef((float)posX, (float)posY, 0.0F);
-        GL11.glBegin(7);
-
-        if (isTransparent) {
-            GlStateManager.color(0.97f,0.97f,0.97f,0.5f);
-        }
-
-        GL11.glTexCoord2f(0.0F, 0.0F);
-        GL11.glVertex3f(0.0F, 0.0F, depth);
-        GL11.glTexCoord2f(0.0F, 1.0F);
-        GL11.glVertex3f(0.0F, (float)height, depth);
-        GL11.glTexCoord2f(1.0F, 1.0F);
-        GL11.glVertex3f((float)width, (float)height, depth);
-        GL11.glTexCoord2f(1.0F, 0.0F);
-        GL11.glVertex3f((float)width, 0.0F, depth);
-
-
-        GL11.glEnd();
-        GL11.glPopMatrix();
-
-
-        if (isBlend) {
-            glDisable(GL_BLEND);
-        }
-
-        if (isTransparent) {
-            GlStateManager.disableAlpha();
-        }
-    }
-
 
     public void drawVideoFrame(boolean isBlend, int depth) {
 

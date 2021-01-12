@@ -26,12 +26,20 @@ public class RealmsOfAvalonModConfig {
     @Config.Comment("Splash Background Blend Enabled")
     public static boolean splashBackgroundBlendEnabled = false;
 
+    @Config.Comment("Custom MainMenu Enabled")
+    public static boolean customMainMenuEnabled = false;
+
+    @Config.Comment("Custom MainMenu Uses Splash Backgrounds")
+    public static boolean customMainMenuUsesSplashBackgrounds = false;
+
     @Config.Comment("Server List Enabled. Use Custom MainMenu and wrapped button ID 7001 for the menu button.")
     public static boolean serverListEnabled = false;
 
     @Config.Comment("File name to use when the custom server list is enabled.")
     public static String serverListFileName = "RealmsOfAvalonServers.nbt";
 
+    @Config.Comment("Pack Version string shown on custom main menu.")
+    public static String PackVersionString = "Beta 0.9.5";
 
     @Mod.EventBusSubscriber(modid = RealmsOfAvalonMod.MODID)
     private static class EventHandler {
